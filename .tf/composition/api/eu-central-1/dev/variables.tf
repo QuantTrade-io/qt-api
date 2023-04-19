@@ -30,3 +30,16 @@ variable "app_name" {
   description = "The name of the application."
   type        = string
 }
+
+########################################
+## Terraform Route53 - DNS && Routing
+########################################
+variable "route53_hosted_zone_name" {
+  description = "Name of the hosted zone we want to retrieve"
+  type        = string
+}
+
+variable "route53_hosted_zone_private" {
+  description = "If the hosted zone we want to retrieve is private"
+  type        = string
+}

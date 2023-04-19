@@ -8,3 +8,6 @@ env              = "dev"
 application_name = "quanttrade-api"
 app_name         = "quanttrade-api"
 
+## Route53 - DNS && Routing ##
+route53_hosted_zone_name    = "quanttrade.io"
+route53_hosted_zone_private = false
