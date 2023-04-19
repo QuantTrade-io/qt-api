@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "qt-api"
+version = "0.1.0"
+description = "QuantTrade API"
+authors = ["Joris Jansen <joris97jansen@gmail.com>"]
+readme = "README.md"
+packages = [{include = "qt_api"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+django = "^4.2"
+psycopg2 = "^2.9.6"
+djangorestframework = "^3.14.0"
+djangorestframework-simplejwt = "^5.2.2"
+factory-boy = "^3.2.1"
+dj-stripe = "^2.7.3"
+django-amazon-ses = "^4.0.1"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

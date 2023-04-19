@@ -1,0 +1,21 @@
+name: Merge in Develop
+on:
+  push:
+    branches:
+      - dev
+jobs:
+  terraform:
+    runs-on: ubuntu-latest
+    environment: dev
+    steps:
+      - name: Get code
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.head_ref }}
+      - name: Format, Validate, Plan & Apply Terraform
+        uses: ./.github/actions/terraform_actions
+        with:
+          aws_access_key_id: ${{ secrets.QUANTTRADE_API_GHA_AWS_ACCESS_KEY_ID }}
+          aws_secret_access_key: ${{ secrets.QUANTTRADE_API_GHA_AWS_SECRET_ACCESS_KEY }}
+          aws_region: eu-central-1
+          environment: dev
