@@ -9,7 +9,7 @@ inputs:
     required: true
   aws_region:
     description: "AWS Region which should be used during this Action"
-    reguired: true
+    required: true
   environment:
     description: "Specify which environment should be tested"
     required: true
