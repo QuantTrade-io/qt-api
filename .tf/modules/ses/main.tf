@@ -6,7 +6,7 @@ resource "aws_ses_domain_identity" "main" {
 }
 
 resource "aws_route53_record" "main" {
-  zone_id = aws_route53_zone.example.zone_id
+  zone_id = var.route53_zone_id
   name    = "_amazonses.${aws_ses_domain_identity.main.id}"
   type    = "TXT"
   ttl     = "600"

@@ -24,3 +24,7 @@ variable "tags" {
 ########################################
 # Module SES - variables
 ########################################
+variable "route53_zone_id" {
+  description = "The zone ID of the Route53 resource"
+  type        = string
+}
