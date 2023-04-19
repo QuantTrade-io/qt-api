@@ -1,0 +1,52 @@
+name: "Format, Validate & Apply Terraform"
+description: "Custom Action for formatting, validating and applying the Terraform code. If the action is triggered by a PR we'll only Format and Validate, if it concerns a Merge we'll also Apply."
+inputs:
+  aws_access_key_id:
+    description: "AWS Access Key in order to Login to AWS"
+    required: true
+  aws_secret_access_key:
+    description: "AWS Secret Access Key in order to Login to AWS"
+    required: true
+  aws_region:
+    description: "AWS Region which should be used during this Action"
+    reguired: true
+  environment:
+    description: "Specify which environment should be tested"
+    required: true
+runs:
+  using: "composite"
+  steps:
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ inputs.aws_access_key_id }}
+          aws-secret-access-key: ${{ inputs.aws_secret_access_key }}
+          aws-region: ${{ inputs.aws_region }}
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+      - name: TF Format
+        shell: bash
+        run: |
+          make tf_fmt
+      - name: TF Validate
+        shell: bash
+        run: |
+          make tf_init env=${{ inputs.environment }}
+          make tf_validate env=${{ inputs.environment }}
+      - name: Push potential changes
+        uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Format Terraform files
+          commit_user_name: My GitHub Actions Bot
+      - name: TF plan
+        shell: bash
+        run: |
+          make tf_init env=${{ inputs.environment }}
+          make tf_plan env=${{ inputs.environment }}
+      - name: TF apply
+        # Only apply changes to the AWS infrastructure on PUSH
+        if: ${{ github.event_name == 'push' }}
+        shell: bash
+        run: |
+          make tf_init env=${{ inputs.environment }}
+          make tf_apply env=${{ inputs.environment }}
