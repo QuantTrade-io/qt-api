@@ -15,7 +15,7 @@ module "ses_mail_server" {
   region   = var.region
 
   ## Route53 variables ##
-  route53_zone_id          = module.route53_dns_routing.route53_zone_id
+  route53_zone_id  = module.route53_dns_routing.route53_zone_id
   hosted_zone_name = var.route53_hosted_zone_name
 }
 
