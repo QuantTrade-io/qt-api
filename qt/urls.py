@@ -32,3 +32,4 @@ urlpatterns = [
     path("stripe/", include("djstripe.urls", namespace="djstripe")),
     path("v1/", include(api_patterns)),
 ]
+
