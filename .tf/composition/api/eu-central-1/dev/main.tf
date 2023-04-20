@@ -35,3 +35,4 @@ module "route53_dns_routing" {
   hosted_zone_name    = var.route53_hosted_zone_name
   hosted_zone_private = var.route53_hosted_zone_private
 }
+
