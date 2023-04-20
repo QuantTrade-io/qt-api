@@ -2,7 +2,7 @@
 # Module SES - main
 ########################################
 resource "aws_ses_domain_identity" "main" {
-  domain = "example.com"
+  domain = var.hosted_zone_name
 }
 
 resource "aws_route53_record" "main" {

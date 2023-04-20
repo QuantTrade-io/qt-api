@@ -28,3 +28,8 @@ variable "route53_zone_id" {
   description = "The zone ID of the Route53 resource"
   type        = string
 }
+
+variable "hosted_zone_name" {
+  description = "Name of the hosted zone we want to retrieve"
+  type        = string
+}

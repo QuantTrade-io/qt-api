@@ -30,6 +30,9 @@ tf_plan:
 tf_apply:
 	terraform -chdir=./.tf/composition/api/eu-central-1/$(env)/ apply --auto-approve
 
+tf_unlock:
+	terraform -chdir=./.tf/composition/api/eu-central-1/$(env)/ force-unlock -force $(id)
+
 stripe_login:
 	stripe login
 
