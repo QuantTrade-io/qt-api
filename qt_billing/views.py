@@ -10,15 +10,19 @@ from django.conf import settings
 import stripe
 import djstripe
 
+from .serializers import PlanSerializer
+
+
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 class Plans(APIView):
     def get(self, request):
         plans = Plan.objects.select_related("product").all()
+        subscription_plans = PlanSerializer(plans, many=True)
 
         import pdb; pdb.set_trace()
-        return Response(status=status.HTTP_200_OK)
+        return Response(subscription_plans.data, status=status.HTTP_200_OK)
 
 # class Subscription(APIView):
 #
