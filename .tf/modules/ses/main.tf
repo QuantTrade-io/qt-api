@@ -27,3 +27,19 @@ resource "aws_ses_domain_mail_from" "main" {
   domain           = aws_ses_email_identity.main.email
   mail_from_domain = "mail.quanttrade.io"
 }
+
+resource "aws_route53_record" "example_ses_domain_mail_from_mx" {
+  zone_id = var.route53_zone_id
+  name    = aws_ses_domain_mail_from.main.mail_from_domain
+  type    = "MX"
+  ttl     = "600"
+  records = ["10 feedback-smtp.eu-central-1.amazonses.com"]
+}
+
+resource "aws_route53_record" "example_ses_domain_mail_from_txt" {
+  zone_id = var.route53_zone_id
+  name    = aws_ses_domain_mail_from.main.mail_from_domain
+  type    = "TXT"
+  ttl     = "600"
+  records = ["v=spf1 include:amazonses.com -all"]
+}
