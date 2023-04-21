@@ -1,7 +1,7 @@
 from django.urls import path
 
-from .views import Subscription
+from .views import Plans
 
 billing_urlpatterns = [
-    path("", Subscription.as_view(), name="subscription"),
+    path("plans/", Plans.as_view(), name="subscription"),
 ]

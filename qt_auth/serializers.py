@@ -13,6 +13,7 @@ class RegisterSerializer(serializers.Serializer):
     )
     first_name = serializers.CharField(max_length=NAME_MAX_LENGTH, allow_blank=False)
     last_name = serializers.CharField(max_length=NAME_MAX_LENGTH, allow_blank=False)
+    # subscription = serializers.CharField(allow_blank=False)
     are_guidelines_accepted = serializers.BooleanField()
 
 
