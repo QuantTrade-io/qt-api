@@ -161,17 +161,15 @@ class User(AbstractUser):
         return '{0}/v1/auth/email-verification?token={1}'.format(settings.WWW_URL, email_verification_token)
 
     def _send_email_verification_token(self, email_verification_token):
-        mail_subject = _('Email verification for QuantTrade')
+        mail_subject = _('[QT] Email verification')
         text_content = render_to_string('qt_auth/email/verify_email.txt', {
-            'name': self.full_name,
-            'email': self.email,
-            'password_reset_link': self._create_email_verification_link(email_verification_token)
+            'full_name': self.full_name,
+            'email_verification_link': self._create_email_verification_link(email_verification_token)
         })
 
         html_content = render_to_string('qt_auth/email/verify_email.html', {
-            'name': self.full_name,
-            'username': self.email,
-            'password_reset_link': self._create_email_verification_link(email_verification_token)
+            'full_name': self.full_name,
+            'email_verification_link': self._create_email_verification_link(email_verification_token)
         })
 
         email = EmailMultiAlternatives(

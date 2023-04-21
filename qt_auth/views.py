@@ -48,7 +48,7 @@ class Register(APIView):
 
         new_user.send_email_verification()
 
-        return Response(_("Account succesfully registered"), status=status.HTTP_201_CREATED)
+        return Response(_("Account succesfully registered, please check your email in order to proceed."), status=status.HTTP_201_CREATED)
 
 
 # class EmailVerify(APIView):

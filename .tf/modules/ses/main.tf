@@ -19,3 +19,11 @@ resource "aws_ses_domain_identity_verification" "main" {
   depends_on = [aws_route53_record.main]
 }
 
+resource "aws_ses_email_identity" "main" {
+  email = "noreply@quanttrade.io"
+}
+
+resource "aws_ses_domain_mail_from" "main" {
+  domain           = aws_ses_email_identity.main.email
+  mail_from_domain = "mail.quanttrade.io"
+}

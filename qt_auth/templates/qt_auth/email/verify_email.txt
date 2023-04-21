@@ -1,0 +1,10 @@
+Hi {{ full_name }},
+
+Thank you for registering at QuantTrade.
+In order to proceed with your account, please confirm your email:
+{{ email_verification_link }}
+
+If you did not initiate this request, please contact us!
+
+Thanks
+The QuantTrade Team
