@@ -7,7 +7,7 @@
                 "ses:SendEmail",
                 "ses:SenmdRawEamail"
             ],
-            "Resource": "${SES_RESOURCE_ARN}"
+            "Resource": "*"
         }
     ]
 }
