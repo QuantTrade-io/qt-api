@@ -15,8 +15,8 @@ module "ses_mail_server" {
   region   = var.region
 
   ## Route53 variables ##
-  route53_zone_id          = module.route53_dns_routing.route53_zone_id
-  hosted_zone_name = var.route53_hosted_zone_name
+  no_reply_email = var.no_reply_email
+  ses_user_name  = module.iam_users_roles_permissions.ses_user_name
 }
 
 ###############################################
@@ -36,3 +36,16 @@ module "route53_dns_routing" {
   hosted_zone_private = var.route53_hosted_zone_private
 }
 
+###############################################
+## Terraform IAM - Users, roles & permissions
+###############################################
+module "iam_users_roles_permissions" {
+  source = "../../../../modules/iam"
+
+  ## Common Meta Data ##
+  env            = var.env
+  app_name       = var.app_name
+  tags           = local.tags
+  region         = var.region
+  reference_name = var.reference_name
+}

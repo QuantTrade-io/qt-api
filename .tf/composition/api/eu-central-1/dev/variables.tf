@@ -31,6 +31,19 @@ variable "app_name" {
   type        = string
 }
 
+variable "reference_name" {
+  description = "The shorter name of the application."
+  type        = string
+}
+
+########################################
+## Terraform Route53 - DNS && Routing
+########################################
+variable "no_reply_email" {
+  description = "Email address that is used for no-reply stuff"
+  type        = string
+}
+
 ########################################
 ## Terraform Route53 - DNS && Routing
 ########################################

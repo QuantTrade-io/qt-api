@@ -146,14 +146,17 @@ DJSTRIPE_USE_NATIVE_JSONFIELD = True
 DJSTRIPE_FOREIGN_KEY_TO_FIELD = "id"
 
 
-# Email Config
-
-EMAIL_BACKEND = 'django_amazon_ses.EmailBackend'
-AWS_SES_REGION = os.environ.get('AWS_SES_REGION')
+# AWS Config
 AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
-SERVICE_EMAIL_ADDRESS = os.environ.get('SERVICE_EMAIL_ADDRESS')
-EMAIL_HOST = os.environ.get('EMAIL_HOST')
+
+# Email Config
+EMAIL_BACKEND = "django_ses.SESBackend"
+AWS_SES_REGION_NAME = os.environ.get("AWS_SES_REGION_NAME")
+AWS_SES_REGION_ENDPOINT = os.environ.get("AWS_SES_REGION_ENDPOINT")
+
+
+NO_REPLY_EMAIL_ADDRESS = os.environ.get('SERVICE_EMAIL_ADDRESS')
 
 
 # Internationalization
