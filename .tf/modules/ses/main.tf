@@ -24,4 +24,3 @@ resource "aws_iam_user_policy_attachment" "ses_user_policy_attachement" {
   user       = var.ses_user_name
   policy_arn = aws_iam_policy.ses_send_email_policy.arn
 }
-
