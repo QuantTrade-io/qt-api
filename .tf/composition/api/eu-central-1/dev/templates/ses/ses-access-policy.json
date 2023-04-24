@@ -5,10 +5,16 @@
             "Effect": "Allow",
             "Action": [
                 "ses:SendEmail",
-                "ses:SendRawEmail",
-                "ses:GetSendQuota"
+                "ses:SendRawEmail"
             ],
             "Resource": "${SES_ARN}"
+        },
+        {
+            "Effect": "Allow",
+            "Action": [
+                "ses:GetSendQuota"
+            ],
+            "Resource": "*"
         }
     ]
 }
