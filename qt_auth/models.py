@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from django.core.mail import EmailMultiAlternatives
+from django.core.mail import EmailMultiAlternatives, send_mail
 from django.template.loader import render_to_string
 import jwt
 
@@ -173,7 +173,7 @@ class User(AbstractUser):
         })
 
         email = EmailMultiAlternatives(
-            mail_subject, text_content, to=[self.email], from_email=settings.SERVICE_EMAIL_ADDRESS
+            mail_subject, text_content, to=[self.email], from_email=settings.NO_REPLY_EMAIL_ADDRESS
         )
         email.attach_alternative(html_content, 'text/html')
         email.send()

@@ -211,6 +211,27 @@ boto3 = ">=1.3.0"
 Django = ">=2.2"
 
 [[package]]
+name = "django-ses"
+version = "3.3.0"
+description = "A Django email backend for Amazon's Simple Email Service"
+category = "main"
+optional = false
+python-versions = ">=3.7,<4.0"
+files = [
+    {file = "django_ses-3.3.0-py3-none-any.whl", hash = "sha256:029edd3f23333f09cd14b4ebc274a5c3700819f16f1fcd5a25b5639b3be0fdba"},
+    {file = "django_ses-3.3.0.tar.gz", hash = "sha256:bdfc5bd4bf1f95d01756761bc9dae40b79c4c709e49ff1b9bd9e853dfd09efb1"},
+]
+
+[package.dependencies]
+boto3 = ">=1.0.0"
+django = ">=2.2"
+pytz = ">=2016.10"
+
+[package.extras]
+bounce = ["cryptography (>=36.0.2)", "requests (>=2.27.1)"]
+events = ["cryptography (>=36.0.2)", "requests (>=2.27.1)"]
+
+[[package]]
 name = "djangorestframework"
 version = "3.14.0"
 description = "Web APIs for Django, made easy."
@@ -502,5 +523,5 @@ socks = ["PySocks (>=1.5.6,!=1.5.7,<2.0)"]
 
 [metadata]
 lock-version = "2.0"
-python-versions = "^3.11"
-content-hash = "d1617ef4ceb63310134d6cdc1e6eaae9a56b663f754aa38a481daa2004138185"
+python-versions = "^3.10"
+content-hash = "7a1b2bf10dab954753103c5881e6b7e6f935ae2b95c3f0ec738052a2a61e4c7d"

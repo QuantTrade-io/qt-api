@@ -21,15 +21,12 @@ variable "tags" {
   type        = map(any)
 }
 
-########################################
-# Module SES - variables
-########################################
-variable "no_reply_email" {
-  description = "Email address that is used for no-reply stuff"
+variable "reference_name" {
+  description = "The shorter name of the application."
   type        = string
 }
 
-variable "ses_user_name" {
-  description = "Name of the user that is allowed to do SES stuff"
-  type        = string
-}
+########################################
+# Module SES - variables
+########################################
+

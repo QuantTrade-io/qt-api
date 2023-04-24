@@ -3,18 +3,25 @@
 ########################################
 
 resource "aws_ses_email_identity" "main" {
-  email = "no-reply@quanttrade.io"
+  email = var.no_reply_email
 }
 
-resource "aws_iam_policy" "ses_role_policy" {
-  name        = local.ses_role_policy_name
-  path        = local.ses_role_policy_path
-  description = local.ses_role_policy_description
-  policy      = file("./templates/ses/ses-role.json")
+data "template_file" "ses_send_email_policy" {
+  template = file("./templates/ses/ses-access-policy.json")
+
+  vars = {
+    SES_ARN = aws_ses_email_identity.main.arn
+  }
 }
 
-# Attaches a Managed IAM Policy to an IAM user
-resource "aws_iam_user_policy_attachment" "user_policy" {
-  user       = "qt-joris"
-  policy_arn = aws_iam_policy.ses_role_policy.arn
+resource "aws_iam_policy" "ses_send_email_policy" {
+  name        = local.ses_iam_policy_name
+  description = local.ses_iam_policy_description
+  policy      = data.template_file.ses_send_email_policy.rendered
 }
+
+resource "aws_iam_user_policy_attachment" "ses_user_policy_attachement" {
+  user       = var.ses_user_name
+  policy_arn = aws_iam_policy.ses_send_email_policy.arn
+}
+
