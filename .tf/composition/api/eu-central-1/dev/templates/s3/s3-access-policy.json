@@ -1,0 +1,19 @@
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "AllowPublicRead"
+            "Effect": "Allow",
+            "Principal": {
+                "AWS": "*"
+            },
+            "Action": [
+                "s3:GetObject"
+            ],
+            "Resource": [
+                "${S3_ARN}",
+                "${S3_ARN}/*"
+            ]
+        }
+    ]
+}
