@@ -51,6 +51,6 @@ data "template_file" "s3_send_email_policy" {
 
 resource "aws_s3_bucket_policy" "allow_access_from_another_account" {
   bucket = aws_s3_bucket.main.id
-  policy      = data.template_file.s3_send_email_policy.rendered
+  policy = data.template_file.s3_send_email_policy.rendered
 }
 
