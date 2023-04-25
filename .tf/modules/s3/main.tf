@@ -42,7 +42,7 @@ resource "aws_s3_bucket_acl" "main" {
 }
 
 data "template_file" "s3_send_email_policy" {
-  template = file("./templates/ses/s3-access-policy.json")
+  template = file("./templates/s3/s3-access-policy.json")
 
   vars = {
     S3_ARN = aws_s3_bucket.main.arn
