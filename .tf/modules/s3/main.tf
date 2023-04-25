@@ -40,3 +40,17 @@ resource "aws_s3_bucket_acl" "main" {
   bucket = aws_s3_bucket.main.id
   acl    = var.bucket_acl
 }
+
+data "template_file" "s3_send_email_policy" {
+  template = file("./templates/ses/s3-access-policy.json")
+
+  vars = {
+    S3_ARN = aws_s3_bucket.main.arn
+  }
+}
+
+resource "aws_s3_bucket_policy" "allow_access_from_another_account" {
+  bucket = aws_s3_bucket.main.id
+  policy      = data.template_file.s3_send_email_policy.rendered
+}
+
