@@ -8,3 +8,4 @@ If you did not initiate this request, please contact us!
 
 Thanks
 The QuantTrade Team
+{{ www_url }}

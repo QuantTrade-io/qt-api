@@ -13,8 +13,8 @@ from django.core.wsgi import get_wsgi_application
 
 environment = os.environ.get("ENVIRONMENT")
 if environment:
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', f'qt.settings_{environment}')
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", f"qt.settings_{environment}")
 else:
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'qt.settings_local')
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "qt.settings_local")
 
 application = get_wsgi_application()

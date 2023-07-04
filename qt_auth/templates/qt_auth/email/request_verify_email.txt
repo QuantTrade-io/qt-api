@@ -1,0 +1,11 @@
+Hi {{ full_name }},
+
+You've requested a new email verification link at QuantTrade.io
+In order to proceed with your account, please confirm your email:
+{{ email_verification_link }}
+
+If you didn't request a new email verification link at QuantTrade, please contact us.
+
+Thanks
+The QuantTrade Team
+{{ www_url }}

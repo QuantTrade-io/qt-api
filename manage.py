@@ -8,9 +8,9 @@ def main():
     """Run administrative tasks."""
     environment = os.environ.get("ENVIRONMENT")
     if environment:
-        os.environ.setdefault('DJANGO_SETTINGS_MODULE', f'qt.settings_{environment}')
+        os.environ.setdefault("DJANGO_SETTINGS_MODULE", f"qt.settings_{environment}")
     else:
-        os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'qt.settings_local')
+        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "qt.settings_local")
 
     try:
         from django.core.management import execute_from_command_line

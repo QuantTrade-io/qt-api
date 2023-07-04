@@ -1,0 +1,336 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2023-07-04 16:08+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: qt/settings_base.py:198
+msgid "English"
+msgstr ""
+
+#: qt/settings_base.py:199
+msgid "Dutch"
+msgstr ""
+
+#: qt_auth/managers.py:16
+msgid "The Email must be set"
+msgstr ""
+
+#: qt_auth/managers.py:32
+msgid "Superuser must have is_staff=True."
+msgstr ""
+
+#: qt_auth/managers.py:34
+msgid "Superuser must have is_superuser=True."
+msgstr ""
+
+#: qt_auth/models.py:37 qt_utils/models.py:23
+msgid "email address"
+msgstr ""
+
+#: qt_auth/models.py:61
+msgid "The user's Stripe Customer object, if it exists"
+msgstr ""
+
+#: qt_auth/models.py:74
+msgid "user"
+msgstr ""
+
+#: qt_auth/models.py:75
+msgid "users"
+msgstr ""
+
+#: qt_auth/models.py:104 qt_utils/models.py:37
+msgid "You must enter an emailaddress."
+msgstr ""
+
+#: qt_auth/models.py:109
+msgid "You must enter a password."
+msgstr ""
+
+#: qt_auth/models.py:114
+msgid "You must enter your first name."
+msgstr ""
+
+#: qt_auth/models.py:119
+msgid "You must enter your last name."
+msgstr ""
+
+#: qt_auth/models.py:124 qt_auth/tests/test_user_registration.py:158
+#: qt_auth/tests/test_user_registration.py:178
+msgid "You must accept the guidelines to make an account."
+msgstr ""
+
+#: qt_auth/models.py:156 qt_auth/tests/test_user_change_email.py:202
+#: qt_auth/tests/test_user_change_password.py:183
+#: qt_auth/tests/test_user_email_verification.py:102
+msgid "Token type does not match"
+msgstr ""
+
+#: qt_auth/models.py:161 qt_auth/tests/test_user_change_email.py:365
+#: qt_auth/tests/test_user_change_password.py:297
+#: qt_auth/tests/test_user_email_verification.py:268
+msgid "Unable to reuse token multiple times."
+msgstr ""
+
+#: qt_auth/models.py:167 qt_auth/tests/test_user_change_password.py:235
+#: qt_auth/tests/test_user_email_verification.py:154
+msgid "Invalid token signature"
+msgstr ""
+
+#: qt_auth/models.py:169 qt_auth/tests/test_user_change_password.py:209
+#: qt_auth/tests/test_user_email_verification.py:128
+msgid "Token expired"
+msgstr ""
+
+#: qt_auth/models.py:171 qt_auth/tests/test_user_change_email.py:174
+#: qt_auth/tests/test_user_change_password.py:131
+#: qt_auth/tests/test_user_email_verification.py:49
+msgid "Failed to decode token"
+msgstr ""
+
+#: qt_auth/models.py:173 qt_auth/tests/test_user_change_email.py:232
+#: qt_auth/tests/test_user_change_password.py:157
+#: qt_auth/tests/test_user_email_verification.py:75
+msgid "No user found for token"
+msgstr ""
+
+#: qt_auth/models.py:175
+msgid "Invalid token"
+msgstr ""
+
+#: qt_auth/models.py:186 qt_auth/tests/test_user_login_refresh_token.py:52
+#: qt_auth/tests/test_user_login_refresh_token.py:194
+msgid "Unable to use token"
+msgstr ""
+
+#: qt_auth/models.py:303
+msgid "[QT] Email verification"
+msgstr ""
+
+#: qt_auth/models.py:339
+msgid "[QT] New Email verification"
+msgstr ""
+
+#: qt_auth/models.py:375
+msgid "[QT] Password reset"
+msgstr ""
+
+#: qt_auth/models.py:411
+msgid "[QT] Change email"
+msgstr ""
+
+#: qt_auth/models.py:443
+msgid "[QT] Change email verification"
+msgstr ""
+
+#: qt_auth/tests/test_user_change_email.py:36
+#: qt_auth/tests/test_user_logout.py:32
+#: qt_security/tests/test_device_item.py:27
+#: qt_security/tests/test_devices.py:34
+msgid "Authentication credentials were not provided."
+msgstr ""
+
+#: qt_auth/tests/test_user_change_email.py:56 qt_auth/views.py:348
+msgid ""
+"\n"
+"                There is no subscription related to this account,\n"
+"                please create a new account with the email you want.\n"
+"                "
+msgstr ""
+
+#: qt_auth/tests/test_user_change_email.py:81 qt_auth/views.py:361
+msgid ""
+"\n"
+"                Change emailaddress succesfully requested,\n"
+"                please check your current email in order to proceed.\n"
+"                "
+msgstr ""
+
+#: qt_auth/tests/test_user_change_email.py:109
+#: qt_auth/tests/test_user_change_email.py:110
+#: qt_auth/tests/test_user_change_email.py:111
+#: qt_auth/tests/test_user_change_password.py:32
+#: qt_auth/tests/test_user_change_password.py:113
+#: qt_auth/tests/test_user_change_password.py:114
+#: qt_auth/tests/test_user_email_verification.py:32
+#: qt_auth/tests/test_user_login.py:29 qt_auth/tests/test_user_login.py:45
+#: qt_auth/tests/test_user_login_refresh_token.py:35
+#: qt_auth/tests/test_user_logout.py:50
+#: qt_auth/tests/test_user_registration.py:33
+#: qt_auth/tests/test_user_registration.py:34
+#: qt_auth/tests/test_user_registration.py:35
+#: qt_auth/tests/test_user_registration.py:36
+#: qt_auth/tests/test_user_registration.py:52
+#: qt_auth/tests/test_user_registration.py:68
+#: qt_auth/tests/test_user_registration.py:140
+#: qt_auth/tests/test_user_request_email_verification.py:27
+#: qt_security/tests/test_devices.py:52
+#: qt_utils/tests/test_newsletter_subscribe.py:28
+msgid "This field is required."
+msgstr ""
+
+#: qt_auth/tests/test_user_change_email.py:130
+#: qt_auth/tests/test_user_change_password.py:48
+#: qt_auth/tests/test_user_change_password.py:64
+#: qt_auth/tests/test_user_request_email_verification.py:43
+#: qt_auth/tests/test_user_request_email_verification.py:59
+#: qt_auth/validators.py:18
+msgid "No user found with this email."
+msgstr ""
+
+#: qt_auth/tests/test_user_change_email.py:153
+#: qt_auth/tests/test_user_registration.py:200 qt_auth/validators.py:11
+msgid "An account for the email already exists."
+msgstr ""
+
+#: qt_auth/tests/test_user_change_email.py:264 qt_auth/views.py:396
+msgid "Unable to match the current token with the email address provided."
+msgstr ""
+
+#: qt_auth/tests/test_user_change_email.py:307 qt_auth/views.py:409
+msgid ""
+"\n"
+"                Email changed successfully,\n"
+"                please check your new emails inbox in order to confirm.\n"
+"                "
+msgstr ""
+
+#: qt_auth/tests/test_user_change_password.py:85 qt_auth/views.py:297
+msgid ""
+"\n"
+"                Password reset email succesfully requested,\n"
+"                please check your email in order to proceed.\n"
+"                "
+msgstr ""
+
+#: qt_auth/tests/test_user_change_password.py:267 qt_auth/views.py:332
+msgid "Password changed successfully."
+msgstr ""
+
+#: qt_auth/tests/test_user_email_verification.py:179 qt_auth/views.py:100
+msgid "Unable to verify email in the current status."
+msgstr ""
+
+#: qt_auth/tests/test_user_email_verification.py:207
+#: qt_auth/tests/test_user_email_verification.py:243 qt_auth/views.py:109
+msgid "Account succesfully verified, welcome to the Team."
+msgstr ""
+
+#: qt_auth/tests/test_user_login.py:63
+msgid "Incorrect authentication credentials."
+msgstr ""
+
+#: qt_auth/tests/test_user_logout.py:70 qt_auth/validators.py:25
+msgid "Oustanding token not found."
+msgstr ""
+
+#: qt_auth/tests/test_user_registration.py:87
+msgid "This password is too short. It must contain at least 8 characters."
+msgstr ""
+
+#: qt_auth/tests/test_user_registration.py:107
+msgid "Ensure this field has at least 10 characters."
+msgstr ""
+
+#: qt_auth/tests/test_user_registration.py:218
+#: qt_utils/tests/test_newsletter_subscribe.py:43
+msgid "Enter a valid email address."
+msgstr ""
+
+#: qt_auth/tests/test_user_registration.py:240 qt_auth/views.py:67
+msgid ""
+"\n"
+"                Account succesfully registered,\n"
+"                please check your email in order to proceed.\n"
+"                "
+msgstr ""
+
+#: qt_auth/tests/test_user_request_email_verification.py:80
+#: qt_auth/views.py:137
+msgid "Your email is already verified, you should be able to login."
+msgstr ""
+
+#: qt_auth/tests/test_user_request_email_verification.py:103
+#: qt_auth/tests/test_user_request_email_verification.py:129
+#: qt_auth/views.py:146
+msgid ""
+"\n"
+"                A new email is send to you,\n"
+"                please check the instructions in order to proceed.\n"
+"                "
+msgstr ""
+
+#: qt_auth/views.py:221
+msgid "Unable to login with given credentials"
+msgstr ""
+
+#: qt_auth/views.py:270
+msgid "Logged out succesfully"
+msgstr ""
+
+#: qt_security/models.py:44
+msgid "Operating System"
+msgstr ""
+
+#: qt_security/permissions.py:19
+msgid "Your account is not associated with a valid subscription."
+msgstr ""
+
+#: qt_security/tests/test_device_item.py:43 qt_security/validators.py:11
+msgid "Device not found."
+msgstr ""
+
+#: qt_security/tests/test_device_item.py:61 qt_security/views.py:65
+msgid ""
+"\n"
+"                Device succesfully deleted form the logged in list,\n"
+"                it could take a couple of minutes\n"
+"                before the changes are affected on the device itself.\n"
+"                "
+msgstr ""
+
+#: qt_security/tests/test_devices.py:72 qt_security/validators.py:19
+msgid "Token not found."
+msgstr ""
+
+#: qt_utils/models.py:27
+msgid "Newsletter Subscriber"
+msgstr ""
+
+#: qt_utils/models.py:28
+msgid "Newletter Subscribers"
+msgstr ""
+
+#: qt_utils/tests/test_newsletter_subscribe.py:63 qt_utils/validators.py:11
+msgid "A subscription to our newsletter with this email already exists."
+msgstr ""
+
+#: qt_utils/tests/test_newsletter_subscribe.py:81 qt_utils/views.py:40
+msgid "Succesfully subscribed to the QT Newsletter"
+msgstr ""
+
+#: qt_utils/tests/test_newsletter_unsubscribe.py:28 qt_utils/validators.py:19
+msgid "No Newsletter Subscriber found with the provided information."
+msgstr ""
+
+#: qt_utils/tests/test_newsletter_unsubscribe.py:43 qt_utils/views.py:66
+msgid "Succesfully unsubscribed to the QT Newsletter"
+msgstr ""
+
+#~ msgid "first translation"
+#~ msgstr "first translation"

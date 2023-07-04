@@ -1,3 +1,17 @@
 from django.contrib import admin
 
-# Register your models here.
+from .models import NewsletterSubscriber
+
+
+class NewsletterSubscriberAdmin(admin.ModelAdmin):
+    fields = (
+        "email",
+        "uuid",
+    )
+    readonly_fields = ("uuid",)
+
+    class Meta:
+        model = NewsletterSubscriber
+
+
+admin.site.register(NewsletterSubscriber, NewsletterSubscriberAdmin)

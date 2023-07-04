@@ -1,7 +1,16 @@
 from django.urls import path
 
-from .views import CheckAuthentication
+from .views import NewsletterSubscribers, NewsletterSubscribersItem
 
 utils_urlpatterns = [
-    path("check-authentication/", CheckAuthentication.as_view(), name="check-authentication"),
+    path(
+        "newsletter-subscribers/",
+        NewsletterSubscribers.as_view(),
+        name="newsletter-subscribers",
+    ),
+    path(
+        "newsletter-subscribers/<uuid:uuid>/",
+        NewsletterSubscribersItem.as_view(),
+        name="newsletter-subscribers-item",
+    ),
 ]

@@ -1,15 +1,14 @@
 import json
 
+import stripe
 from django.urls import reverse
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 from rest_framework import status
 from rest_framework.test import APITestCase
-import stripe
+
+from qt_auth.factories import UserFactory
 from qt_utils.model_loaders import get_user_model
-
 from qt_utils.tests.helpers import clear_stripe_customers
-
-from qt_auth.factories import UserRegisterFactory
 
 
 class UserRegistrationTests(APITestCase):
@@ -22,7 +21,7 @@ class UserRegistrationTests(APITestCase):
 
     def test_empty_request(self):
         """
-        Test that an empty request to register a new user.
+        Test that an empty request for registering a new user.
         """
         url = self._get_url()
 
@@ -31,10 +30,10 @@ class UserRegistrationTests(APITestCase):
 
         parsed_response = json.loads(response.content)
 
-        self.assertEqual(parsed_response["email"][0], "This field is required.")
-        self.assertEqual(parsed_response["password"][0], "This field is required.")
-        self.assertEqual(parsed_response["first_name"][0], "This field is required.")
-        self.assertEqual(parsed_response["last_name"][0], "This field is required.")
+        self.assertEqual(parsed_response["email"][0], _("This field is required."))
+        self.assertEqual(parsed_response["password"][0], _("This field is required."))
+        self.assertEqual(parsed_response["first_name"][0], _("This field is required."))
+        self.assertEqual(parsed_response["last_name"][0], _("This field is required."))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_email_required(self):
@@ -50,27 +49,7 @@ class UserRegistrationTests(APITestCase):
         }
         response = self.client.post(url, data)
         parsed_response = json.loads(response.content)
-        self.assertEqual(parsed_response["email"][0], "This field is required.")
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    def test_email_is_taken(self):
-        """
-        Test an email address that's already taken.
-        """
-        url = self._get_url()
-
-        first_user = UserRegisterFactory()
-        second_account = {
-            "email": first_user.email,
-            "password": "SuperDuperSecretPassword(!)123",
-            "first_name": "Warren",
-            "last_name": "Buffet",
-            "are_guidelines_accepted": True,
-        }
-
-        response = self.client.post(url, second_account)
-        parsed_response = json.loads(response.content)
-        self.assertEqual(parsed_response["email"][0], "An account for the email already exists.")
+        self.assertEqual(parsed_response["email"][0], _("This field is required."))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_password_required(self):
@@ -86,7 +65,7 @@ class UserRegistrationTests(APITestCase):
         }
         response = self.client.post(url, data)
         parsed_response = json.loads(response.content)
-        self.assertEqual(parsed_response["password"][0], "This field is required.")
+        self.assertEqual(parsed_response["password"][0], _("This field is required."))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_password_to_short(self):
@@ -103,7 +82,10 @@ class UserRegistrationTests(APITestCase):
         }
         response = self.client.post(url, data)
         parsed_response = json.loads(response.content)
-        self.assertEqual(parsed_response["password"][0], "This password is too short. It must contain at least 8 characters.")
+        self.assertEqual(
+            parsed_response["password"][0],
+            _("This password is too short. It must contain at least 8 characters."),
+        )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_password_too_short(self):
@@ -120,7 +102,10 @@ class UserRegistrationTests(APITestCase):
         }
         response = self.client.post(url, data)
         parsed_response = json.loads(response.content)
-        self.assertEqual(parsed_response["password"][0], "Ensure this field has at least 10 characters.")
+        self.assertEqual(
+            parsed_response["password"][0],
+            _("Ensure this field has at least 10 characters."),
+        )
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_first_name_required(self):
@@ -136,7 +121,7 @@ class UserRegistrationTests(APITestCase):
         }
         response = self.client.post(url, data)
         parsed_response = json.loads(response.content)
-        self.assertEqual(parsed_response["first_name"][0], "This field is required.")
+        self.assertEqual(parsed_response["first_name"][0], ("This field is required."))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_last_name_required(self):
@@ -152,12 +137,12 @@ class UserRegistrationTests(APITestCase):
         }
         response = self.client.post(url, data)
         parsed_response = json.loads(response.content)
-        self.assertEqual(parsed_response["last_name"][0], "This field is required.")
+        self.assertEqual(parsed_response["last_name"][0], _("This field is required."))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_guidelines_accepted_required(self):
         """
-        Test that guidelines must be accepted.
+        Test that guidelines are provided.
         """
         url = self._get_url()
         data = {
@@ -168,7 +153,69 @@ class UserRegistrationTests(APITestCase):
         }
         response = self.client.post(url, data)
         parsed_response = json.loads(response.content)
-        self.assertEqual(parsed_response[0], _("You must accept the guidelines to make an account."))
+
+        self.assertEqual(
+            parsed_response[0], _("You must accept the guidelines to make an account.")
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_guidelines_not_accepted(self):
+        """
+        Test that guidelines must be accepted.
+        """
+        url = self._get_url()
+        data = {
+            "email": "warrenbuffet@gmail.com",
+            "password": "SuperSecretPassword(!)",
+            "first_name": "Joris",
+            "last_name": "Jansen",
+            "are_guidelines_accepted": False,
+        }
+        response = self.client.post(url, data)
+        parsed_response = json.loads(response.content)
+
+        self.assertEqual(
+            parsed_response[0], _("You must accept the guidelines to make an account.")
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_email_is_taken(self):
+        """
+        Test an email address that's already taken.
+        """
+        url = self._get_url()
+
+        first_user = UserFactory()
+        second_account = {
+            "email": first_user.email,
+            "password": "SuperDuperSecretPassword(!)123",
+            "first_name": "Warren",
+            "last_name": "Buffet",
+            "are_guidelines_accepted": True,
+        }
+
+        response = self.client.post(url, second_account)
+        parsed_response = json.loads(response.content)
+        self.assertEqual(
+            parsed_response["email"][0], _("An account for the email already exists.")
+        )
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    def test_invalid_email(self):
+        """
+        Test that an emailaddres must be valid.
+        """
+        url = self._get_url()
+        data = {
+            "email": "not_an_email",
+            "password": "SuperSecretPassword(!)",
+            "first_name": "Joris",
+            "last_name": "Jansen",
+            "are_guidelines_accepted": True,
+        }
+        response = self.client.post(url, data)
+        parsed_response = json.loads(response.content)
+        self.assertEqual(parsed_response["email"][0], _("Enter a valid email address."))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
     def test_user_can_register(self):
@@ -187,7 +234,15 @@ class UserRegistrationTests(APITestCase):
         }
         response = self.client.post(url, data)
         parsed_response = json.loads(response.content)
-        self.assertEqual(parsed_response, _("Account succesfully registered"))
+        self.assertEqual(
+            parsed_response["message"],
+            _(
+                """
+                Account succesfully registered,
+                please check your email in order to proceed.
+                """
+            ),
+        )
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
 
         User = get_user_model()
@@ -197,7 +252,9 @@ class UserRegistrationTests(APITestCase):
 
         self.assertEqual(stripe_customer["name"], user.full_name)
         self.assertEqual(stripe_customer["email"], user.email)
+        self.assertEqual(User.STATUS_TYPE_REGISTERED, user.status)
+        self.assertIsNotNone(user.customer)
+        self.assertTrue(user.are_guidelines_accepted)
 
     def _get_url(self):
         return reverse("user-register")
-
