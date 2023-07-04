@@ -1,7 +1,7 @@
 .PHONY : lint runserver test makemessages compilemessages
 
 lint:
-	flake8 .
+	flake8 . --max-line-length 88 --exclude migrations
 
 format:
 	black .
@@ -14,6 +14,12 @@ start:
 
 test:
 	python manage.py test
+
+make_messages:
+	python manage.py makemessages --all
+
+compile_messages:
+	python manage.py compilemessages
 
 tf_fmt:
 	terraform fmt -recursive ./.tf

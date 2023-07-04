@@ -1,0 +1,11 @@
+Hi {{ full_name }},
+
+You've requested to change your email at QuantTrade.io
+In order to proceed with changing your email, please visit the following link:
+{{ email_reset_link }}
+
+If you didn't request to change your email at QuantTrade, please contact us.
+
+Thanks
+The QuantTrade Team
+{{ www_url }}

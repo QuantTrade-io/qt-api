@@ -11,11 +11,9 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 import os
-from pathlib import Path
+from datetime import timedelta
 
-# Build paths inside the project like this: BASE_DIR / 'subdir'.
-BASE_DIR = Path(__file__).resolve().parent.parent
-
+from django.utils.translation import gettext_lazy as _
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.1/howto/deployment/checklist/
@@ -24,9 +22,11 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure--5adrjk2^%7pc9%_*78nzns!nbgs_p0xrn)m-p=8b1ei)p3+)7"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.environ.get("DEBUG", True)
 
 ALLOWED_HOSTS = []
+
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 # Application definition
@@ -39,20 +39,27 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
     # 3th party
+    "corsheaders",
     "djstripe",
+    "modeltranslation",
+    "ordered_model",
     "rest_framework",
-
+    "rest_framework_api_key",
+    "rest_framework_simplejwt",
+    "rest_framework_simplejwt.token_blacklist",
     # local
     "qt_auth",
     "qt_billing",
+    "qt_security",
     "qt_utils",
 ]
 
 MIDDLEWARE = [
+    "corsheaders.middleware.CorsMiddleware",
     "django.middleware.security.SecurityMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
+    "django.middleware.locale.LocaleMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
@@ -85,8 +92,8 @@ WSGI_APPLICATION = "qt.wsgi.application"
 # https://docs.djangoproject.com/en/4.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
         "NAME": os.environ.get("POSTGRES_NAME"),
         "USER": os.environ.get("POSTGRES_USER"),
         "PASSWORD": os.environ.get("POSTGRES_PASSWORD"),
@@ -96,13 +103,13 @@ DATABASES = {
 }
 
 
-
 # Password validation
 # https://docs.djangoproject.com/en/4.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+        "NAME": "django.contrib.auth.password_validation."
+        "UserAttributeSimilarityValidator",
     },
     {
         "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
@@ -121,25 +128,36 @@ AUTH_USER_MODEL = "qt_auth.User"
 # REST Framework config
 
 REST_FRAMEWORK = {
-    'DEFAULT_PARSER_CLASSES': (
-        'rest_framework.parsers.MultiPartParser',
-        'rest_framework.parsers.FormParser',
-        'rest_framework.parsers.JSONParser',
+    "DEFAULT_PARSER_CLASSES": (
+        "rest_framework.parsers.MultiPartParser",
+        "rest_framework.parsers.FormParser",
+        "rest_framework.parsers.JSONParser",
     ),
-    'DEFAULT_RENDERER_CLASSES': (
-        'rest_framework.renderers.JSONRenderer',
+    "DEFAULT_RENDERER_CLASSES": ("rest_framework.renderers.JSONRenderer",),
+    "DEFAULT_AUTHENTICATION_CLASSES": (
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
     ),
-    'DEFAULT_AUTHENTICATION_CLASSES': (
-        'rest_framework_simplejwt.authentication.JWTAuthentication',
-    ),
+    # https://www.django-rest-framework.org/api-guide/pagination/#cursorpagination
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.CursorPagination",
+    "PAGE_SIZE": 25,
 }
 
-JWT_ALGORITHM = os.environ.get('JWT_ALGORITHM', 'HS256')
+JWT_ALGORITHM = os.environ.get("JWT_ALGORITHM", "HS256")
 
-WWW_URL = os.environ.get('WWW_URL','www.dev.quanttrade.io')
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=5),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=30),
+    "ROTATE_REFRESH_TOKENS": False,
+    "BLACKLIST_AFTER_ROTATION": False,
+    "ALGORITHM": JWT_ALGORITHM,
+    "SIGNING_KEY": SECRET_KEY,
+    "AUTH_HEADER_TYPES": ("Bearer",),
+}
+
+WWW_URL = os.environ.get("WWW_URL", "http://localhost:3000")
+API_URL = os.environ.get("API_URL", "http://localhost:8000")
 
 # Stripe Settings
-
 STRIPE_LIVE_MODE = os.environ.get("STRIPE_LIVE_MODE", False)
 DJSTRIPE_WEBHOOK_SECRET = os.environ.get("DJSTRIPE_WEBHOOK_SECRET")
 DJSTRIPE_USE_NATIVE_JSONFIELD = True
@@ -147,8 +165,8 @@ DJSTRIPE_FOREIGN_KEY_TO_FIELD = "id"
 
 
 # AWS Config
-AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
+AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
 
 # Email Config
 EMAIL_BACKEND = "django_ses.SESBackend"
@@ -156,25 +174,46 @@ AWS_SES_REGION_NAME = os.environ.get("AWS_SES_REGION_NAME")
 AWS_SES_REGION_ENDPOINT = os.environ.get("AWS_SES_REGION_ENDPOINT")
 
 
-NO_REPLY_EMAIL_ADDRESS = os.environ.get('SERVICE_EMAIL_ADDRESS')
+NO_REPLY_EMAIL_ADDRESS = os.environ.get("SERVICE_EMAIL_ADDRESS")
+
+# Geolocation API
+GEOLOCATION_API_KEY = os.environ.get("GEOLOCATION_API_KEY")
 
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.1/topics/i18n/
 
-LANGUAGE_CODE = "en-us"
+MODELTRANSLATION_FALLBACK_LANGUAGES = ("en",)
 
-TIME_ZONE = "UTC"
+TIME_ZONE = "Europe/Amsterdam"
 
 USE_I18N = True
 
+USE_L10N = True
+
 USE_TZ = True
 
+LOCALE_PATHS = (os.path.join(BASE_DIR, "locale/"),)
+
+LANGUAGES = (
+    ("en", _("English")),
+    ("nl", _("Dutch")),
+)
+
+LANGUAGE_CODE = "en"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
 
-STATIC_URL = "static/"
+STATIC_URL = "/static/"
+
+MEDIA_ROOT = os.environ.get("MEDIA_ROOT", "./media")
+
+MEDIA_URL = os.environ.get("MEDIA_URL", "/media/")
+
+STATICFILES_DIRS = (os.path.join(BASE_DIR, "qt/static"),)
+
+STATIC_ROOT = os.path.join(BASE_DIR, "static")
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.1/ref/settings/#default-auto-field

@@ -71,5 +71,4 @@ module "s3_public_assets" {
   block_public_acls       = var.s3_bucket_public_assets_block_public_acls
   ignore_public_acls      = var.s3_bucket_public_assets_ignore_public_acls
   restrict_public_buckets = var.s3_bucket_public_assets_restrict_public_buckets
-
 }

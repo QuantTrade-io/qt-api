@@ -16,8 +16,28 @@ factory-boy = "^3.2.1"
 dj-stripe = "^2.7.3"
 django-amazon-ses = "^4.0.1"
 django-ses = "^3.3.0"
+cryptography = "^40.0.2"
+django-ordered-model = "^3.7.4"
+django-modeltranslation = "^0.18.9"
+django-cors-headers = "^3.14.0"
+djangorestframework-api-key = "^2.3.0"
+django-fsm = "^2.8.1"
+user-agents = "^2.2.0"
 
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.3.0"
+isort = "^5.12.0"
+flake8 = "^6.0.0"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
+
+[tool.isort]
+profile = "black"
+skip = ["migrations"]
+line_length = 88
+
+[tool.black]
+exclude = "migrations"
