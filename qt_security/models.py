@@ -2,7 +2,6 @@ import requests
 from django.conf import settings
 from django.db import models
 from django.db.models import Q
-from django.utils.translation import gettext_lazy as _
 from rest_framework_simplejwt.token_blacklist.models import OutstandingToken
 from user_agents import parse
 
@@ -35,8 +34,13 @@ class DeviceImage(AbstractTimeStampModel):
     Model for matching device info with an image,
     in order to easily upload and update information.
     """
+
     image = models.ImageField(
-        upload_to="images/devices/", blank=True, null=True, storage=QTPublicAssets(), max_length=250
+        upload_to="images/devices/",
+        blank=True,
+        null=True,
+        storage=QTPublicAssets(),
+        max_length=250,
     )
     description = models.TextField(max_length=1024)
 
@@ -93,9 +97,7 @@ class Device(AbstractTimeStampModel):
     @classmethod
     def get_information_from_request(cls, request):
         ip_address = cls._get_ip_from_request(request)
-        info = cls._get_device_info(
-            request.META.get("HTTP_USER_AGENT")
-        )
+        info = cls._get_device_info(request.META.get("HTTP_USER_AGENT"))
         city, country = cls._get_location_from_ip(ip_address)
 
         return info, city, country
@@ -129,13 +131,15 @@ class Device(AbstractTimeStampModel):
         return str(parse(user_agent))
 
     def _get_device_image(self):
-        parts = self.info.split('/')
+        parts = self.info.split("/")
         words = [part.strip() for part in parts]
         search_items = [item.split()[0] for item in reversed(words)]
 
         # iterate over words starting from the most important one (first word)
         for word in search_items:
-            device_image = DeviceImage.objects.filter(Q(description__icontains=word)).first()
+            device_image = DeviceImage.objects.filter(
+                Q(description__icontains=word)
+            ).first()
             if not device_image:
                 continue
             return device_image

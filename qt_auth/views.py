@@ -187,9 +187,7 @@ class Login(APIView):
         info, city, country = Device.get_information_from_request(request)
 
         with transaction.atomic():
-            Device.create_device(
-                user, outstanding_token, info, city, country
-            )
+            Device.create_device(user, outstanding_token, info, city, country)
 
         return Response(
             {"token": token, "account_status": user.status}, status=status.HTTP_200_OK
