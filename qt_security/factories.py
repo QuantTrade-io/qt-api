@@ -14,8 +14,7 @@ class DeviceFactory(DjangoModelFactory):
 
     user = None
     token = None
-    os = Faker("first_name")
-    family = Faker("last_name")
-    name = Faker("word")
+    image = None
+    info = Faker("sentence")
     city = Faker("city")
     country = Faker("country")

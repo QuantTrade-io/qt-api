@@ -1,7 +1,8 @@
 from django.contrib import admin
 from django.core.management import call_command
+from django.utils.safestring import mark_safe
 
-from .models import BlacklistedJWTToken, Device
+from .models import BlacklistedJWTToken, Device, DeviceImage
 
 
 class BlacklistedJWTTokenAdmin(admin.ModelAdmin):
@@ -33,12 +34,40 @@ class BlacklistedJWTTokenAdmin(admin.ModelAdmin):
         return super().changelist_view(request, extra_context=extra_context)
 
 
-class DeviceAdmin(admin.ModelAdmin):
-    list_display = ("get_name", "get_user", "created_at", "updated_at")
+class DeviceImageAdmin(admin.ModelAdmin):
+    list_display = ("description", "get_image_preview", "created_at", "updated_at")
     readonly_fields = (
+        "get_image_preview",
         "created_at",
         "updated_at",
     )
+
+    def get_image_preview(self, obj):
+        if obj.image:
+            return mark_safe(
+                '<img src="{}" '
+                'width="100" '
+                'height="100" '
+                'style="object-fit:contain" />'.format(obj.get_image)
+            )
+        else:
+            return "(No image)"
+
+
+class DeviceAdmin(admin.ModelAdmin):
+    list_display = (
+        "get_name",
+        "get_image_preview",
+        "get_user",
+        "created_at",
+        "updated_at",
+    )
+    readonly_fields = (
+        "get_image_preview",
+        "created_at",
+        "updated_at",
+    )
+    exclude = ("image",)
     actions = ["flush_expired_tokens_and_devices"]
 
     def get_name(self, obj):
@@ -46,6 +75,17 @@ class DeviceAdmin(admin.ModelAdmin):
 
     def get_user(self, obj):
         return obj.token.user
+
+    def get_image_preview(self, obj):
+        if obj.image:
+            return mark_safe(
+                '<img src="{}" '
+                'width="100" '
+                'height="100" '
+                'style="object-fit:contain" />'.format(obj.get_image)
+            )
+        else:
+            return "(No image)"
 
     def flush_expired_tokens_and_devices(self, request, queryset):
         call_command("flushexpiredtokens")
@@ -75,4 +115,5 @@ class DeviceAdmin(admin.ModelAdmin):
 
 
 admin.site.register(BlacklistedJWTToken, BlacklistedJWTTokenAdmin)
+admin.site.register(DeviceImage, DeviceImageAdmin)
 admin.site.register(Device, DeviceAdmin)
