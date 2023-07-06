@@ -8,8 +8,14 @@
 from .settings_base import *  # noqa
 
 # AWS config
+AWS_DEFAULT_REGION = ""
 AWS_ACCESS_KEY_ID = ""
 AWS_SECRET_ACCESS_KEY = ""
+
+AWS_S3_PUBLIC_ASSETS = ""
+
+AWS_S3_ACCESS_KEY_ID = ""
+AWS_S3_SECRET_ACCESS_KEY = ""
 
 # Email config
 AWS_SES_REGION_NAME = ""
