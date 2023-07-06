@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .serializer_fields import CurrentField
+from .serializer_fields import CurrentField, ImageField
 from .validators import device_id_exists, refresh_token_exists
 
 
@@ -14,9 +14,8 @@ class GetDeviceSerializer(serializers.Serializer):
 class DevicesSerializer(serializers.Serializer):
     id = serializers.CharField()
     token = serializers.CharField()
-    os = serializers.CharField()
-    family = serializers.CharField()
-    name = serializers.CharField()
+    image = ImageField()
+    info = serializers.CharField()
     city = serializers.CharField()
     country = serializers.CharField()
     current = CurrentField()

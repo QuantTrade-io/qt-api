@@ -10,3 +10,13 @@ class CurrentField(Field):
     def to_representation(self, device):
         current_token = self.context.get("current_token")
         return current_token == device.token.token
+
+
+class ImageField(Field):
+    def __init__(self, **kwargs):
+        kwargs["source"] = "*"
+        kwargs["read_only"] = True
+        super(ImageField, self).__init__(**kwargs)
+
+    def to_representation(self, device):
+        return device.get_image

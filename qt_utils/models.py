@@ -1,9 +1,11 @@
 import uuid
 
+from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from rest_framework.exceptions import ValidationError
+from storages.backends.s3boto3 import S3Boto3Storage
 
 
 class AbstractTimeStampModel(models.Model):
@@ -12,6 +14,11 @@ class AbstractTimeStampModel(models.Model):
 
     class Meta:
         abstract = True
+
+
+class QTPublicAssets(S3Boto3Storage):
+    bucket_name = settings.AWS_S3_PUBLIC_ASSETS
+    region_name = settings.AWS_DEFAULT_REGION
 
 
 class NewsletterSubscriber(AbstractTimeStampModel):

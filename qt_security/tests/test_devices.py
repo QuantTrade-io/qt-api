@@ -101,9 +101,7 @@ class DevicesAPITests(TestCase):
         current_count = 0
         for device in response.data:
             self.assertIn("token", device)
-            self.assertIn("os", device)
-            self.assertIn("family", device)
-            self.assertIn("name", device)
+            self.assertIn("info", device)
             self.assertIn("city", device)
             self.assertIn("country", device)
             if device.get("current"):

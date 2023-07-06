@@ -184,12 +184,10 @@ class Login(APIView):
         outstanding_token = OutstandingToken.objects.get(token=token["refresh"])
 
         Device = get_device_model()
-        os, family, name, city, country = Device.get_information_from_request(request)
+        info, city, country = Device.get_information_from_request(request)
 
         with transaction.atomic():
-            Device.create_device(
-                user, outstanding_token, os, family, name, city, country
-            )
+            Device.create_device(user, outstanding_token, info, city, country)
 
         return Response(
             {"token": token, "account_status": user.status}, status=status.HTTP_200_OK
@@ -233,7 +231,7 @@ class LoginRefreshToken(APIView):
 
         Device = get_device_model()
         device = Device.objects.get(token=outstanding_token)
-        __, __, __, city, country = Device.get_information_from_request(request)
+        __, city, country = Device.get_information_from_request(request)
 
         with transaction.atomic():
             device.city = city

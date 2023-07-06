@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     "rest_framework_api_key",
     "rest_framework_simplejwt",
     "rest_framework_simplejwt.token_blacklist",
+    "storages",
     # local
     "qt_auth",
     "qt_billing",
@@ -165,8 +166,14 @@ DJSTRIPE_FOREIGN_KEY_TO_FIELD = "id"
 
 
 # AWS Config
+AWS_DEFAULT_REGION = os.environ.get("AWS_DEFAULT_REGION")
 AWS_ACCESS_KEY_ID = os.environ.get("AWS_ACCESS_KEY_ID")
 AWS_SECRET_ACCESS_KEY = os.environ.get("AWS_SECRET_ACCESS_KEY")
+
+AWS_S3_PUBLIC_ASSETS = os.environ.get("AWS_S3_PUBLIC_ASSETS")
+
+AWS_S3_ACCESS_KEY_ID = os.environ.get("AWS_S3_ACCESS_KEY_ID")
+AWS_S3_SECRET_ACCESS_KEY = os.environ.get("AWS_S3_SECRET_ACCESS_KEY")
 
 # Email Config
 EMAIL_BACKEND = "django_ses.SESBackend"
