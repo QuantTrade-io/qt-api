@@ -15,6 +15,9 @@ from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from qt_utils.helpers import aws_instance_directory_path, get_public_image_s3
+from qt_utils.models import QTPrivateAssets, QTPublicAssets
+
 from qt_utils.model_loaders import (
     get_blacklisted_jwt_token_model,
     get_blacklisted_token_model,
@@ -23,6 +26,8 @@ from qt_utils.model_loaders import (
 )
 
 from .managers import CustomUserManager
+
+DEFAULT_PROFILE_IMAGE_KEY = "images/unkown_user.png"
 
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -35,6 +40,14 @@ class User(AbstractUser):
 
     username = None
     email = models.EmailField(_("email address"), unique=True)
+
+    image = models.ImageField(
+        upload_to=aws_instance_directory_path,
+        blank=True,
+        null=True,
+        storage=QTPrivateAssets(),
+        max_length=250,
+    )
 
     are_guidelines_accepted = models.BooleanField(default=False)
     is_email_verified = models.BooleanField(default=False)
@@ -123,13 +136,16 @@ class User(AbstractUser):
             raise ValidationError(
                 _("You must accept the guidelines to make an account."),
             )
-
+        
+        image = get_public_image_s3(QTPublicAssets.bucket_name, DEFAULT_PROFILE_IMAGE_KEY)
+        
         new_user = cls.objects.create_user(
             email=email,
             password=password,
             first_name=first_name,
             last_name=last_name,
             are_guidelines_accepted=are_guidelines_accepted,
+            image=image
         )
 
         return new_user
