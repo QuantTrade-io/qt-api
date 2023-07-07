@@ -101,6 +101,11 @@ variable "s3_bucket_public_assets_restrict_public_buckets" {
   type        = bool
 }
 
+variable "s3_bucket_public_assets_create_s3_public_policy" {
+  description = "Whether the Public Policy should be create for this bucket."
+  type        = bool
+}
+
 ########################################
 ## Terraform S3 Bucket - Private Assets
 ########################################
@@ -142,5 +147,10 @@ variable "s3_bucket_private_assets_ignore_public_acls" {
 
 variable "s3_bucket_private_assets_restrict_public_buckets" {
   description = "Whether Amazon S3 should restrict public bucket policies for this bucket."
+  type        = bool
+}
+
+variable "s3_bucket_private_assets_create_s3_public_policy" {
+  description = "Whether the Public Policy should be create for this bucket."
   type        = bool
 }

@@ -65,3 +65,7 @@ variable "restrict_public_buckets" {
   type        = bool
 }
 
+variable "create_s3_public_policy" {
+  description = "Whether the Public Policy should be create for this bucket."
+  type        = bool
+}

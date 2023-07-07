@@ -25,6 +25,7 @@ s3_bucket_public_assets_block_public_policy     = false
 s3_bucket_public_assets_block_public_acls       = false
 s3_bucket_public_assets_ignore_public_acls      = false
 s3_bucket_public_assets_restrict_public_buckets = false
+s3_bucket_public_assets_create_s3_public_policy = true
 
 ## S3 bucket - Private Assets ##
 s3_bucket_private_assets_name                    = "private-assets"
@@ -35,3 +36,4 @@ s3_bucket_private_assets_block_public_policy     = true
 s3_bucket_private_assets_block_public_acls       = true
 s3_bucket_private_assets_ignore_public_acls      = true
 s3_bucket_private_assets_restrict_public_buckets = true
+s3_bucket_private_assets_create_s3_public_policy = false
