@@ -21,6 +21,11 @@ class QTPublicAssets(S3Boto3Storage):
     region_name = settings.AWS_DEFAULT_REGION
 
 
+class QTPrivateAssets(S3Boto3Storage):
+    bucket_name = settings.AWS_S3_PRIVATE_ASSETS
+    region_name = settings.AWS_DEFAULT_REGION
+
+
 class NewsletterSubscriber(AbstractTimeStampModel):
     """
     Information about a 'user' that is Subscribed

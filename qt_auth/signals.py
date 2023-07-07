@@ -5,6 +5,6 @@ from .models import User
 
 
 @receiver(post_delete, sender=User)
-def delete_profile(sender, instance, *args, **kwargs):
+def delete_user(sender, instance, *args, **kwargs):
     # Cancel subscription
     instance.cancel_current_subscription()
