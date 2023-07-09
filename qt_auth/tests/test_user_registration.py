@@ -1,13 +1,17 @@
 import json
 
+import boto3
 import stripe
+from django.conf import settings
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
+from moto import mock_s3
 from rest_framework import status
 from rest_framework.test import APITestCase
 
 from qt_auth.factories import UserFactory
 from qt_utils.model_loaders import get_user_model
+from qt_utils.models import QTPrivateAssets
 from qt_utils.tests.helpers import clear_stripe_customers
 
 
@@ -16,8 +20,20 @@ class UserRegistrationTests(APITestCase):
     User registration API tests.
     """
 
+    def setUp(self):
+        self.mocked_s3 = mock_s3()
+        self.mocked_s3.start()
+        self.s3 = boto3.resource("s3")
+        self.s3.create_bucket(
+            Bucket=QTPrivateAssets.bucket_name,
+            CreateBucketConfiguration={
+                "LocationConstraint": settings.AWS_DEFAULT_REGION
+            },
+        )
+
     def tearDown(self):
         clear_stripe_customers()
+        self.mocked_s3.stop()
 
     def test_empty_request(self):
         """
