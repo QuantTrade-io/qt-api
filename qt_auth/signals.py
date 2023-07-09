@@ -8,3 +8,5 @@ from .models import User
 def delete_user(sender, instance, *args, **kwargs):
     # Cancel subscription
     instance.cancel_current_subscription()
+    # Delete AWS S3 folder for user (based on email)
+    instance.delete_aws_resources_for_user()

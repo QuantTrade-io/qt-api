@@ -26,6 +26,7 @@ user-agents = "^2.2.0"
 django-storages = "^1.13.2"
 pillow = "^10.0.0"
 psycopg2-binary = "^2.9.6"
+moto = "^4.1.12"
 
 
 [tool.poetry.group.dev.dependencies]

@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 
+import boto3
 import jwt
 import stripe
 from django.conf import settings
@@ -15,7 +16,7 @@ from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from qt_utils.helpers import aws_instance_directory_path, get_public_image_s3
+from qt_utils.helpers import aws_instance_directory_path, get_s3_image
 from qt_utils.models import QTPrivateAssets, QTPublicAssets
 
 from qt_utils.model_loaders import (
@@ -29,6 +30,9 @@ from .managers import CustomUserManager
 
 DEFAULT_PROFILE_IMAGE_KEY = "images/unkown_user.png"
 
+s3_resource = boto3.resource(
+    "s3", aws_access_key_id=settings.AWS_ACCESS_KEY_ID, aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY
+)
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
@@ -137,7 +141,7 @@ class User(AbstractUser):
                 _("You must accept the guidelines to make an account."),
             )
         
-        image = get_public_image_s3(QTPublicAssets.bucket_name, DEFAULT_PROFILE_IMAGE_KEY)
+        image = get_s3_image(QTPublicAssets.bucket_name, DEFAULT_PROFILE_IMAGE_KEY)
         
         new_user = cls.objects.create_user(
             email=email,
@@ -267,6 +271,11 @@ class User(AbstractUser):
         if self.customer.subscription or not self.customer.subscription.is_valid():
             return True
         return False
+
+    def delete_aws_resources_for_user(self):
+        bucket = s3_resource.Bucket(QTPrivateAssets.bucket_name)
+        for obj in bucket.objects.filter(Prefix=f"user_{self.email}/"):
+            s3_resource.Object(QTPrivateAssets.bucket_name, obj.key).delete()
 
     def cancel_current_subscription(self):
         # canceld current subscription(s), though it should be one!
