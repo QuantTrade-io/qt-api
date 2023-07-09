@@ -17,21 +17,22 @@ from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 
 from qt_utils.helpers import aws_instance_directory_path, get_s3_image
-from qt_utils.models import QTPrivateAssets, QTPublicAssets
-
 from qt_utils.model_loaders import (
     get_blacklisted_jwt_token_model,
     get_blacklisted_token_model,
     get_outstanding_token_model,
     get_stripe_customer_model,
 )
+from qt_utils.models import QTPrivateAssets, QTPublicAssets
 
 from .managers import CustomUserManager
 
 DEFAULT_PROFILE_IMAGE_KEY = "images/unkown_user.png"
 
 s3_resource = boto3.resource(
-    "s3", aws_access_key_id=settings.AWS_ACCESS_KEY_ID, aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY
+    "s3",
+    aws_access_key_id=settings.AWS_ACCESS_KEY_ID,
+    aws_secret_access_key=settings.AWS_SECRET_ACCESS_KEY,
 )
 stripe.api_key = settings.STRIPE_SECRET_KEY
 
@@ -140,16 +141,16 @@ class User(AbstractUser):
             raise ValidationError(
                 _("You must accept the guidelines to make an account."),
             )
-        
+
         image = get_s3_image(QTPublicAssets.bucket_name, DEFAULT_PROFILE_IMAGE_KEY)
-        
+
         new_user = cls.objects.create_user(
             email=email,
             password=password,
             first_name=first_name,
             last_name=last_name,
             are_guidelines_accepted=are_guidelines_accepted,
-            image=image
+            image=image,
         )
 
         return new_user
