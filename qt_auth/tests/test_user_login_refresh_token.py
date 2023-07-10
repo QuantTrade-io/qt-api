@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from qt_auth.factories import UserFactory
+from qt_auth.factories import UserFactory, UserUnsubscribedFactory, UserSubscribedFactory
 from qt_security.factories import DeviceFactory
 from qt_utils.model_loaders import (
     get_blacklisted_token_model,
@@ -93,7 +93,27 @@ class UserLoginRefreshTokenAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
         self.assertEqual(response.data["account_status"], User.STATUS_TYPE_REGISTERED)
 
-    def test_login_refresh_token_verified_user(self):
+    def test_login_refresh_token_change_email(self):
+        """
+        Login with refresh token user status change email
+        Should return 401
+        """
+        url = self._get_url()
+        User = get_user_model()
+
+        user = UserFactory(status=User.STATUS_TYPE_CHANGE_EMAIL)
+        refresh_token = get_refresh_token_for_user(user)
+
+        data = {
+            "refresh_token": refresh_token,
+        }
+
+        response = self.client.post(url, data, format="json")
+
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        self.assertEqual(response.data["account_status"], User.STATUS_TYPE_CHANGE_EMAIL)
+
+    def test_login_refresh_token_verified_user_unsubscribed(self):
         """
         Login with refresh token verified user
         Should return 200
@@ -101,7 +121,7 @@ class UserLoginRefreshTokenAPITests(APITestCase):
         url = self._get_url()
         User = get_user_model()
 
-        user = UserFactory(status=User.STATUS_TYPE_VERIFIED)
+        user = UserUnsubscribedFactory()
         token = user.get_jwt_token()
 
         # Ugly way of creating a Device, since it is required in the
@@ -120,13 +140,14 @@ class UserLoginRefreshTokenAPITests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["account_status"], User.STATUS_TYPE_VERIFIED)
+        self.assertEqual(response.data["subscribed"], False)
         self.assertIn("access_token", response.data)
         self.assertNotEqual(
             outstanding_token.device.updated_at,
             outstanding_token_updated.device.updated_at,
         )
 
-    def test_login_refresh_token_ubscribeduser(self):
+    def test_login_refresh_token_subscribed_user(self):
         """
         Login with refresh token subscribed user
         Should return 200
@@ -134,7 +155,7 @@ class UserLoginRefreshTokenAPITests(APITestCase):
         url = self._get_url()
         User = get_user_model()
 
-        user = UserFactory(status=User.STATUS_TYPE_STRIPE_SUBSCRIBED)
+        user = UserSubscribedFactory()
         token = user.get_jwt_token()
 
         # Ugly way of creating a Device, since it is required in the
@@ -153,8 +174,9 @@ class UserLoginRefreshTokenAPITests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            response.data["account_status"], User.STATUS_TYPE_STRIPE_SUBSCRIBED
+            response.data["account_status"], User.STATUS_TYPE_VERIFIED
         )
+        self.assertEqual(response.data["subscribed"], True)
         self.assertIn("access_token", response.data)
         self.assertNotEqual(
             outstanding_token.device.updated_at,
@@ -169,7 +191,7 @@ class UserLoginRefreshTokenAPITests(APITestCase):
         url = self._get_url()
         User = get_user_model()
 
-        user = UserFactory(status=User.STATUS_TYPE_STRIPE_SUBSCRIBED)
+        user = UserFactory(status=User.STATUS_TYPE_VERIFIED)
         # refresh_token = get_refresh_token_for_user(user)
         token = user.get_jwt_token()
 
