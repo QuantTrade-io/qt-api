@@ -66,7 +66,6 @@ class CheckoutSession(APIView):
             checkout_session = stripe.checkout.Session.create(
                 client_reference_id=request.user.id,
                 payment_method_types=["card", "paypal"],
-                # customer_email = request.user.email,
                 customer=request.user.customer.id,
                 locale=request.LANGUAGE_CODE,
                 currency="usd",

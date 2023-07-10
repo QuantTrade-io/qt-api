@@ -17,4 +17,4 @@ def my_handler(event, **kwargs):
         user.set_user_subscription_status()
         user.save()
 
-    return Response(status=status.HTTP_401_UNAUTHORIZED)
+    return Response(status=status.HTTP_200_OK)

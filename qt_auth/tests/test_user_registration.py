@@ -158,7 +158,7 @@ class UserRegistrationTests(APITestCase):
 
     def test_guidelines_accepted_required(self):
         """
-        Test that guidelines are provided.
+        Test that guidelines are required.
         """
         url = self._get_url()
         data = {

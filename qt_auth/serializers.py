@@ -2,6 +2,8 @@ from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 
 from qt.settings_base import NAME_MAX_LENGTH, PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH
+from qt_security.serializers import DeviceSerializer
+from qt_utils.serializer_fields import ImageField
 
 from .validators import (
     outstanding_token_exists,
@@ -64,3 +66,12 @@ class VerifyResetEmailSerializer(serializers.Serializer):
     token = serializers.CharField(allow_blank=False)
     email_old = serializers.EmailField(validators=[user_email_exists_validator])
     email_new = serializers.EmailField(validators=[user_email_not_taken_validator])
+
+
+class GetAuthenticatedUserSerializer(serializers.Serializer):
+    id = serializers.IntegerField(required=True)
+    email = serializers.EmailField(required=True)
+    first_name = serializers.CharField(required=True)
+    last_name = serializers.CharField(required=True)
+    image = ImageField()
+    devices = DeviceSerializer(many=True)

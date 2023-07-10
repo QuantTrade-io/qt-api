@@ -1,9 +1,9 @@
 import urllib
 
-from django.test import TestCase
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from rest_framework import status
+from rest_framework.test import APITestCase
 
 from qt_auth.factories import UserFactory
 from qt_utils.model_loaders import (
@@ -16,7 +16,7 @@ from qt_utils.tests.helpers import (
 )
 
 
-class DevicesAPITests(TestCase):
+class DevicesAPITests(APITestCase):
     """
     Test Devices API
     """

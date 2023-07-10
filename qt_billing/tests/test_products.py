@@ -1,13 +1,13 @@
 import json
 
-from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
+from rest_framework.test import APITestCase
 
 from qt_billing.factories import ProductUtilFactory
 
 
-class ProductsAPITests(TestCase):
+class ProductsAPITests(APITestCase):
     """
     Test Products API
     """

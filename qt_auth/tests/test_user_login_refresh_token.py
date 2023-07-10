@@ -10,7 +10,7 @@ from qt_utils.model_loaders import (
     get_outstanding_token_model,
     get_user_model,
 )
-from qt_utils.tests.helpers import get_refresh_token_for_user
+from qt_utils.tests.helpers import clear_stripe_customers, get_refresh_token_for_user
 
 
 class UserLoginRefreshTokenAPITests(APITestCase):
@@ -67,6 +67,7 @@ class UserLoginRefreshTokenAPITests(APITestCase):
             "refresh_token": refresh_token,
         }
 
+        clear_stripe_customers()
         user.delete()
 
         with self.assertRaises(User.DoesNotExist):
