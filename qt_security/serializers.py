@@ -1,6 +1,8 @@
 from rest_framework import serializers
 
-from .serializer_fields import CurrentField, ImageField
+from qt_utils.serializer_fields import ImageField
+
+from .serializer_fields import CurrentField
 from .validators import device_id_exists, refresh_token_exists
 
 
@@ -11,7 +13,7 @@ class GetDeviceSerializer(serializers.Serializer):
     )
 
 
-class DevicesSerializer(serializers.Serializer):
+class DeviceSerializer(serializers.Serializer):
     id = serializers.CharField()
     token = serializers.CharField()
     image = ImageField()

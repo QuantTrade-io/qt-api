@@ -1,6 +1,7 @@
 from django.urls import path
 
 from .views import (
+    AuthenticatedUser,
     Login,
     LoginRefreshToken,
     Logout,
@@ -34,7 +35,7 @@ auth_urlpatterns = [
         name="verify-reset-password",
     ),
     # Authenticated User API endpoints
-    # path("user/", AuthenticatedUser.as_view(), name="athenticated-user"),
+    path("user/", AuthenticatedUser.as_view(), name="authenticated-user"),
     # path(
     #   "user/change-subscription/",
     #   AuthenticatedUserChangeSubscription.as_view(),

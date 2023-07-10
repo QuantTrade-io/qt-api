@@ -100,6 +100,11 @@ class User(AbstractUser):
         return f"{self.first_name} {self.last_name}"
 
     @property
+    def get_image(self):
+        if self.image and self.image.url:
+            return self.image.url
+
+    @property
     def can_login(self):
         if (
             self.status == self.STATUS_TYPE_VERIFIED
@@ -269,7 +274,7 @@ class User(AbstractUser):
         self.update_stripe_customer()
 
         # Check if current subscription is payd/valid
-        if self.customer.subscription or not self.customer.subscription.is_valid():
+        if self.customer.subscription and self.customer.subscription.is_valid():
             return True
         return False
 

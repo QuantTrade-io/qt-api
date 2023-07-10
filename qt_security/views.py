@@ -9,7 +9,7 @@ from qt_utils.responses import ApiMessageResponse
 
 from .serializers import (
     DeleteDeviceItemSerializer,
-    DevicesSerializer,
+    DeviceSerializer,
     GetDeviceSerializer,
 )
 
@@ -20,7 +20,7 @@ class Devices(APIView):
     """
 
     permission_classes = (IsAuthenticated,)
-    serializer_class = DevicesSerializer
+    serializer_class = DeviceSerializer
 
     def get(self, request):
         query_params = request.query_params.dict()

@@ -7,6 +7,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from qt_security.permissions import HasValidSubscription
 from qt_utils.model_loaders import (
     get_device_model,
     get_outstanding_token_model,
@@ -15,6 +16,7 @@ from qt_utils.model_loaders import (
 from qt_utils.responses import ApiMessageResponse
 
 from .serializers import (
+    GetAuthenticatedUserSerializer,
     LoginRefreshTokenSerializer,
     LoginSerializer,
     LogoutSerializer,
@@ -411,3 +413,18 @@ class VerifyResetEmail(APIView):
             ),
             status=status.HTTP_202_ACCEPTED,
         )
+
+
+class AuthenticatedUser(APIView):
+    """
+    The API for retrieving all user settings & information
+    """
+
+    permission_classes = (
+        IsAuthenticated,
+        HasValidSubscription,
+    )
+
+    def get(self, request):
+        user_serializer = GetAuthenticatedUserSerializer(request.user)
+        return Response(user_serializer.data, status=status.HTTP_200_OK)
