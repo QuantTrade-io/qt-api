@@ -59,13 +59,11 @@ class User(AbstractUser):
 
     STATUS_TYPE_REGISTERED = "registered"
     STATUS_TYPE_VERIFIED = "verified"
-    STATUS_TYPE_STRIPE_SUBSCRIBED = "subscribed"
     STATUS_TYPE_CHANGE_EMAIL = "change_email"
 
     STATUS_TYPES = (
         (STATUS_TYPE_REGISTERED, "Registered"),
         (STATUS_TYPE_VERIFIED, "Verified"),
-        (STATUS_TYPE_STRIPE_SUBSCRIBED, "Subscribed"),
         (STATUS_TYPE_CHANGE_EMAIL, "Change Email"),
     )
 
@@ -103,15 +101,6 @@ class User(AbstractUser):
     def get_image(self):
         if self.image and self.image.url:
             return self.image.url
-
-    @property
-    def can_login(self):
-        if (
-            self.status == self.STATUS_TYPE_VERIFIED
-            or self.status == self.STATUS_TYPE_STRIPE_SUBSCRIBED
-        ):
-            return True
-        return False
 
     @classmethod
     def create_user(
@@ -212,63 +201,22 @@ class User(AbstractUser):
             raise PermissionDenied(_("Unable to use token"))
 
     @transition(
-        field="status", source=STATUS_TYPE_REGISTERED, target=STATUS_TYPE_VERIFIED
+        field="status", source=[STATUS_TYPE_REGISTERED, STATUS_TYPE_CHANGE_EMAIL], target=STATUS_TYPE_VERIFIED
     )
     def set_user_status_email_verified(self):
         self.is_email_verified = True
 
     @transition(
-        field="status",
-        source=[STATUS_TYPE_STRIPE_SUBSCRIBED],
-        target=STATUS_TYPE_CHANGE_EMAIL,
+        field="status", source=STATUS_TYPE_VERIFIED, target=STATUS_TYPE_CHANGE_EMAIL
     )
     def set_user_status_change_email(self):
         self.is_email_verified = False
-
-    @transition(
-        field="status",
-        source=[STATUS_TYPE_CHANGE_EMAIL],
-        target=STATUS_TYPE_STRIPE_SUBSCRIBED,
-    )
-    def set_user_status_change_email_verified(self):
-        self.is_email_verified = True
-
-    @transition(
-        field="status",
-        source=[STATUS_TYPE_VERIFIED, STATUS_TYPE_STRIPE_SUBSCRIBED],
-        target=STATUS_TYPE_STRIPE_SUBSCRIBED,
-    )
-    def set_user_status_subscribed(self):
-        pass
-
-    @transition(
-        field="status",
-        source=[STATUS_TYPE_VERIFIED, STATUS_TYPE_STRIPE_SUBSCRIBED],
-        target=STATUS_TYPE_VERIFIED,
-    )
-    def set_user_status_unsubscribed(self):
-        pass
-
-    def update_user_status_email_verified(self):
-        if self.status == self.STATUS_TYPE_CHANGE_EMAIL:
-            return self.set_user_status_change_email_verified()
-        return self.set_user_status_email_verified()
 
     def update_stripe_customer(self):
         customer = stripe.Customer.retrieve(self.customer.id)
 
         Customer = get_stripe_customer_model()
         Customer.sync_from_stripe_data(customer)
-
-    def set_user_subscription_status(self):
-        self.update_stripe_customer()
-
-        # Check if current user subscription
-        if self.customer.subscription and self.customer.subscription.is_valid():
-            self.set_user_status_subscribed()
-        else:
-            self.set_user_status_unsubscribed()
-        self.save()
 
     def has_valid_subscription(self):
         self.update_stripe_customer()

@@ -242,7 +242,7 @@ class UserEmailVerificationAPITests(APITestCase):
             parsed_response["message"],
             _("Account succesfully verified, welcome to the Team."),
         )
-        self.assertEqual(user_new.status, User.STATUS_TYPE_STRIPE_SUBSCRIBED)
+        self.assertEqual(user_new.status, User.STATUS_TYPE_VERIFIED)
         self.assertTrue(user_new.is_email_verified)
 
     def test_verify_email_with_same_token_twice(self):

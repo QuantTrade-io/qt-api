@@ -104,7 +104,7 @@ class VerifyEmail(APIView):
             )
 
         with transaction.atomic():
-            user.update_user_status_email_verified()
+            user.set_user_status_email_verified()
             user.save()
 
         return ApiMessageResponse(
@@ -174,7 +174,9 @@ class Login(APIView):
         if not user:
             raise AuthenticationFailed()
 
-        if not user.can_login:
+        User = get_user_model()
+
+        if not user.status == User.STATUS_TYPE_VERIFIED:
             return Response(
                 {"account_status": user.status}, status=status.HTTP_401_UNAUTHORIZED
             )
@@ -192,7 +194,7 @@ class Login(APIView):
             Device.create_device(user, outstanding_token, info, city, country)
 
         return Response(
-            {"token": token, "account_status": user.status}, status=status.HTTP_200_OK
+            {"token": token, "account_status": user.status, "subscribed": user.has_valid_subscription()}, status=status.HTTP_200_OK
         )
 
 
@@ -222,7 +224,7 @@ class LoginRefreshToken(APIView):
                 status=status.HTTP_401_UNAUTHORIZED,
             )
 
-        if not user.can_login:
+        if not user.status == User.STATUS_TYPE_VERIFIED:
             return Response(
                 {"account_status": user.status}, status=status.HTTP_401_UNAUTHORIZED
             )
@@ -241,7 +243,7 @@ class LoginRefreshToken(APIView):
             device.save()
 
         return Response(
-            {"access_token": str(token.access_token), "account_status": user.status},
+            {"access_token": str(token.access_token), "account_status": user.status, "subscribed": user.has_valid_subscription()},
             status=status.HTTP_200_OK,
         )
 
@@ -341,18 +343,6 @@ class RequestResetEmail(APIView):
     permission_classes = (IsAuthenticated,)
 
     def post(self, request):
-        User = get_user_model()
-        if request.user.status != User.STATUS_TYPE_STRIPE_SUBSCRIBED:
-            return ApiMessageResponse(
-                _(
-                    """
-                There is no subscription related to this account,
-                please create a new account with the email you want.
-                """
-                ),
-                status=status.HTTP_401_UNAUTHORIZED,
-            )
-
         with transaction.atomic():
             request.user.send_email_reset_mail()
 

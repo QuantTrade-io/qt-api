@@ -59,7 +59,7 @@ class UserSubscribedFactory(UserFactory):
     NOTE: Use only when needed, slows down the test cases.
     """
 
-    status = get_user_model().STATUS_TYPE_STRIPE_SUBSCRIBED
+    status = get_user_model().STATUS_TYPE_VERIFIED
 
     @classmethod
     def _create(cls, model_class, *args, **kwargs):

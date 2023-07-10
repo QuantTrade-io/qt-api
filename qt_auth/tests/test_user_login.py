@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from qt_auth.factories import UserFactory
+from qt_auth.factories import UserFactory, UserUnsubscribedFactory, UserSubscribedFactory
 from qt_utils.model_loaders import get_user_model
 
 
@@ -91,7 +91,7 @@ class UserLoginAPITests(APITestCase):
         Should return 200, verified user status & token
         """
         User = get_user_model()
-        user = UserFactory(is_email_verified=True, status=User.STATUS_TYPE_VERIFIED)
+        user = UserUnsubscribedFactory()
 
         url = self._get_url()
 
@@ -104,6 +104,7 @@ class UserLoginAPITests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["account_status"], User.STATUS_TYPE_VERIFIED)
+        self.assertEqual(response.data["subscribed"], False)
         self.assertIn("token", response.data)
         self.assertIn("refresh", response.data["token"])
         self.assertIn("access", response.data["token"])
@@ -114,9 +115,7 @@ class UserLoginAPITests(APITestCase):
         Should return 200 & subscribed user status & token
         """
         User = get_user_model()
-        user = UserFactory(
-            is_email_verified=True, status=User.STATUS_TYPE_STRIPE_SUBSCRIBED
-        )
+        user = UserSubscribedFactory()
 
         url = self._get_url()
 
@@ -129,8 +128,9 @@ class UserLoginAPITests(APITestCase):
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(
-            response.data["account_status"], User.STATUS_TYPE_STRIPE_SUBSCRIBED
+            response.data["account_status"], User.STATUS_TYPE_VERIFIED
         )
+        self.assertEqual(response.data["subscribed"], True)
         self.assertIn("token", response.data)
         self.assertIn("refresh", response.data["token"])
         self.assertIn("access", response.data["token"])

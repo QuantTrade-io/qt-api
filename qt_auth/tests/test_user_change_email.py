@@ -36,30 +36,6 @@ class RequestEmailResetAPITests(APITestCase):
             response.data["detail"], _("Authentication credentials were not provided.")
         )
 
-    def test_request_wrong_account_status(self):
-        """
-        Request password reset successfully
-        Should return 200
-        """
-        url = self._get_url()
-
-        user = UserFactory()
-
-        header = make_authentication_headers_auth_token(user)
-
-        response = self.client.post(url, **header, format="json")
-
-        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
-        self.assertEqual(
-            response.data["message"],
-            _(
-                """
-                There is no subscription related to this account,
-                please create a new account with the email you want.
-                """
-            ),
-        )
-
     def test_request_successfull(self):
         """
         Request password reset successfully
@@ -67,8 +43,7 @@ class RequestEmailResetAPITests(APITestCase):
         """
         url = self._get_url()
 
-        User = get_user_model()
-        user = UserFactory(status=User.STATUS_TYPE_STRIPE_SUBSCRIBED)
+        user = UserFactory()
 
         header = make_authentication_headers_auth_token(user)
 
@@ -270,9 +245,8 @@ class VerifyEmailResetAPITests(APITestCase):
         Should return 202
         """
         User = get_user_model()
-        user_old = UserFactory(status=User.STATUS_TYPE_STRIPE_SUBSCRIBED)
 
-        User = get_user_model()
+        user_old = UserFactory(status=User.STATUS_TYPE_VERIFIED)
 
         token = generate_jwt_token(
             User.JWT_TOKEN_TYPE_RESET_EMAIL,
@@ -329,9 +303,8 @@ class VerifyEmailResetAPITests(APITestCase):
         Should return 400
         """
         User = get_user_model()
-        user_old = UserFactory(status=User.STATUS_TYPE_STRIPE_SUBSCRIBED)
 
-        User = get_user_model()
+        user_old = UserFactory(status=User.STATUS_TYPE_VERIFIED)
 
         token = generate_jwt_token(
             User.JWT_TOKEN_TYPE_RESET_EMAIL,

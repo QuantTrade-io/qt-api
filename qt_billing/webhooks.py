@@ -14,7 +14,7 @@ def my_handler(event, **kwargs):
     user = User.objects.get(customer__id=customer_id)
     user.cancel_old_subscriptions()
     with transaction.atomic():
-        user.set_user_subscription_status()
+        user.update_stripe_customer()
         user.save()
 
     return Response(status=status.HTTP_200_OK)
