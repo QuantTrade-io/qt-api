@@ -2,6 +2,7 @@ from django.urls import path
 
 from .views import (
     AuthenticatedUser,
+    AuthenticatedUserSettings,
     Login,
     LoginRefreshToken,
     Logout,
@@ -36,6 +37,11 @@ auth_urlpatterns = [
     ),
     # Authenticated User API endpoints
     path("user/", AuthenticatedUser.as_view(), name="authenticated-user"),
+    path(
+        "user/settings/",
+        AuthenticatedUserSettings.as_view(),
+        name="authenticated-user-settings",
+    ),
     # path(
     #   "user/change-subscription/",
     #   AuthenticatedUserChangeSubscription.as_view(),
