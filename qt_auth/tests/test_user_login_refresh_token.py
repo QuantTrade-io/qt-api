@@ -3,7 +3,11 @@ from django.utils.translation import gettext_lazy as _
 from rest_framework import status
 from rest_framework.test import APITestCase
 
-from qt_auth.factories import UserFactory, UserUnsubscribedFactory, UserSubscribedFactory
+from qt_auth.factories import (
+    UserFactory,
+    UserSubscribedFactory,
+    UserUnsubscribedFactory,
+)
 from qt_security.factories import DeviceFactory
 from qt_utils.model_loaders import (
     get_blacklisted_token_model,
@@ -173,9 +177,7 @@ class UserLoginRefreshTokenAPITests(APITestCase):
         outstanding_token_updated = OutstandingToken.objects.get(token=token["refresh"])
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(
-            response.data["account_status"], User.STATUS_TYPE_VERIFIED
-        )
+        self.assertEqual(response.data["account_status"], User.STATUS_TYPE_VERIFIED)
         self.assertEqual(response.data["subscribed"], True)
         self.assertIn("access_token", response.data)
         self.assertNotEqual(
