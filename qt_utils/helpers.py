@@ -12,9 +12,9 @@ s3 = boto3.client(
 )
 
 
-def aws_instance_directory_path(instance, filename):
-    # file will be uploaded to /user_<id>/<filename>
-    return "user_{0}/{1}".format(instance.email, filename)
+def aws_instance_directory_path(instance, _):
+    # file will be uploaded to /user_<id>/profile_image.png
+    return "user_{0}/{1}".format(instance.email, "profile_image.png")
 
 
 def get_s3_image(bucket_name, key):

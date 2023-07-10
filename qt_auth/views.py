@@ -20,6 +20,7 @@ from .serializers import (
     LoginRefreshTokenSerializer,
     LoginSerializer,
     LogoutSerializer,
+    PatchAuthenticatedUserSerializer,
     RegisterSerializer,
     RequestResetPasswordSerializer,
     RequestVerifyEmailSerializer,
@@ -194,7 +195,12 @@ class Login(APIView):
             Device.create_device(user, outstanding_token, info, city, country)
 
         return Response(
-            {"token": token, "account_status": user.status, "subscribed": user.has_valid_subscription()}, status=status.HTTP_200_OK
+            {
+                "token": token,
+                "account_status": user.status,
+                "subscribed": user.has_valid_subscription(),
+            },
+            status=status.HTTP_200_OK,
         )
 
 
@@ -243,7 +249,11 @@ class LoginRefreshToken(APIView):
             device.save()
 
         return Response(
-            {"access_token": str(token.access_token), "account_status": user.status, "subscribed": user.has_valid_subscription()},
+            {
+                "access_token": str(token.access_token),
+                "account_status": user.status,
+                "subscribed": user.has_valid_subscription(),
+            },
             status=status.HTTP_200_OK,
         )
 
@@ -418,3 +428,28 @@ class AuthenticatedUser(APIView):
     def get(self, request):
         user_serializer = GetAuthenticatedUserSerializer(request.user)
         return Response(user_serializer.data, status=status.HTTP_200_OK)
+
+    def patch(self, request):
+        serializer = PatchAuthenticatedUserSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+
+        user = request.user
+
+        with transaction.atomic():
+            user.update(
+                first_name=data.get("first_name"),
+                last_name=data.get("last_name"),
+                image=request.FILES.get("image"),
+            )
+
+            user.save()
+
+        user_serializer = GetAuthenticatedUserSerializer(user)
+        return Response(user_serializer.data, status=status.HTTP_200_OK)
+
+    def delete(self, request):
+        # do the following:
+        #   - stop stripe subscription
+        #   - delete user & corresponding objects
+        pass

@@ -75,3 +75,8 @@ class GetAuthenticatedUserSerializer(serializers.Serializer):
     last_name = serializers.CharField(required=True)
     image = ImageField()
     devices = DeviceSerializer(many=True)
+
+
+class PatchAuthenticatedUserSerializer(serializers.Serializer):
+    first_name = serializers.CharField(max_length=NAME_MAX_LENGTH, required=False)
+    last_name = serializers.CharField(max_length=NAME_MAX_LENGTH, required=False)

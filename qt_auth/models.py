@@ -200,8 +200,22 @@ class User(AbstractUser):
         except TokenError:
             raise PermissionDenied(_("Unable to use token"))
 
+    def update(self, first_name=None, last_name=None, image=None):
+        if first_name is not None:
+            self.first_name = first_name
+
+        if last_name is not None:
+            self.last_name = last_name
+
+        if image is not None:
+            self.image = image
+
+        return self
+
     @transition(
-        field="status", source=[STATUS_TYPE_REGISTERED, STATUS_TYPE_CHANGE_EMAIL], target=STATUS_TYPE_VERIFIED
+        field="status",
+        source=[STATUS_TYPE_REGISTERED, STATUS_TYPE_CHANGE_EMAIL],
+        target=STATUS_TYPE_VERIFIED,
     )
     def set_user_status_email_verified(self):
         self.is_email_verified = True
