@@ -264,7 +264,15 @@ class VerifyPasswordResetAPITests(APITestCase):
         user = User.objects.get(pk=user.id)
 
         self.assertEqual(response.status_code, status.HTTP_202_ACCEPTED)
-        self.assertEqual(response.data["message"], _("Password changed successfully."))
+        self.assertEqual(
+            response.data["message"],
+            _(
+                """
+                Password changed successfully,
+                you'll be logged-out across all devices within a couple of minutes.
+                """
+            ),
+        )
         self.assertTrue(check_password(password, user.password))
         # Checks for outstanding tokens && Blacklisted tokens
         self.assertEqual(user.outstandingtoken_set.count(), 3)

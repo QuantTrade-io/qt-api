@@ -80,3 +80,16 @@ class GetAuthenticatedUserSerializer(serializers.Serializer):
 class PatchAuthenticatedUserSerializer(serializers.Serializer):
     first_name = serializers.CharField(max_length=NAME_MAX_LENGTH, required=False)
     last_name = serializers.CharField(max_length=NAME_MAX_LENGTH, required=False)
+
+
+class PatchAuthenticatedUserSettingsSerializer(serializers.Serializer):
+    password_new = serializers.CharField(
+        min_length=PASSWORD_MIN_LENGTH,
+        max_length=PASSWORD_MAX_LENGTH,
+        validators=[validate_password],
+    )
+    password_old = serializers.CharField(
+        min_length=PASSWORD_MIN_LENGTH,
+        max_length=PASSWORD_MAX_LENGTH,
+        validators=[validate_password],
+    )

@@ -212,6 +212,12 @@ class User(AbstractUser):
 
         return self
 
+    def update_password(self, password_new):
+        self.set_password(password_new)
+        self.blacklist_all_outstanding_tokens()
+
+        return self
+
     @transition(
         field="status",
         source=[STATUS_TYPE_REGISTERED, STATUS_TYPE_CHANGE_EMAIL],

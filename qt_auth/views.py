@@ -21,6 +21,7 @@ from .serializers import (
     LoginSerializer,
     LogoutSerializer,
     PatchAuthenticatedUserSerializer,
+    PatchAuthenticatedUserSettingsSerializer,
     RegisterSerializer,
     RequestResetPasswordSerializer,
     RequestVerifyEmailSerializer,
@@ -336,12 +337,17 @@ class VerifyResetPassword(APIView):
         user = User.get_user_for_token(token, User.JWT_TOKEN_TYPE_RESET_PASSWORD)
 
         with transaction.atomic():
-            user.set_password(password)
+            user.update_password(password)
             user.save()
-            user.blacklist_all_outstanding_tokens()
 
         return ApiMessageResponse(
-            _("Password changed successfully."), status=status.HTTP_202_ACCEPTED
+            _(
+                """
+                Password changed successfully,
+                you'll be logged-out across all devices within a couple of minutes.
+                """
+            ),
+            status=status.HTTP_202_ACCEPTED,
         )
 
 
@@ -453,3 +459,41 @@ class AuthenticatedUser(APIView):
         #   - stop stripe subscription
         #   - delete user & corresponding objects
         pass
+
+
+class AuthenticatedUserSettings(APIView):
+    """
+    The API for updating all user settings & information
+    """
+
+    permission_classes = (
+        IsAuthenticated,
+        HasValidSubscription,
+    )
+
+    def patch(self, request):
+        serializer = PatchAuthenticatedUserSettingsSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+
+        password_old = data.get("password_old")
+        password_new = data.get("password_new")
+
+        user = request.user
+
+        if not user.check_password(password_old):
+            raise AuthenticationFailed(detail=_("Password is not valid"))
+
+        with transaction.atomic():
+            user.update_password(password_new)
+            user.save()
+
+        return ApiMessageResponse(
+            _(
+                """
+                Password changed successfully,
+                you'll be logged-out across all devices within a couple of minutes.
+                """
+            ),
+            status=status.HTTP_202_ACCEPTED,
+        )
