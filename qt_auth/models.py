@@ -98,6 +98,13 @@ class User(AbstractUser):
         return f"{self.first_name} {self.last_name}"
 
     @property
+    def billing_portal(self):
+        return stripe.billing_portal.Session.create(
+            customer=self.customer.id,
+            return_url=f"{settings.WWW_URL}/platform/account/settings",
+        )
+
+    @property
     def get_image(self):
         if self.image and self.image.url:
             return self.image.url
