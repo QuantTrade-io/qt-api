@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import CheckoutSession, Products
+from .views import BillingPortalSession, CheckoutSession, Products
 
 # import webhooks.py inorder to register the webhooks
 from .webhooks import *  # noqa
@@ -12,4 +12,5 @@ billing_urlpatterns = [
         CheckoutSession.as_view(),
         name="checkout-session",
     ),
+    path("portal/", BillingPortalSession.as_view(), name="portal"),
 ]

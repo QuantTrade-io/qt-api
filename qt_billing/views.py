@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from qt_security.permissions import HasValidSubscription
 from qt_utils.model_loaders import (
     get_product_util_model,
     get_stripe_plan_model,
@@ -13,6 +14,7 @@ from qt_utils.model_loaders import (
 )
 
 from .serializers import (
+    BillingPortalSessionSerializer,
     CheckoutSessionResponseSerializer,
     CheckoutSessionSerializer,
     ProductIntervalSerializer,
@@ -79,3 +81,19 @@ class CheckoutSession(APIView):
             return Response(response_serializer.data, status=status.HTTP_201_CREATED)
         except Exception as err:
             raise err
+
+
+class BillingPortalSession(APIView):
+    """
+    API for getting a Stripe Billing Portal URL
+    """
+
+    permission_classes = (
+        IsAuthenticated,
+        HasValidSubscription,
+    )
+    serializer_class = BillingPortalSessionSerializer
+
+    def get(self, request):
+        response_serializer = self.serializer_class(request.user.billing_portal)
+        return Response(response_serializer.data, status=status.HTTP_201_CREATED)

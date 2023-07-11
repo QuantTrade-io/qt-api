@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .serializer_fields import IntervalField
+from .serializer_fields import BillingPortalURLField, IntervalField
 
 
 class PriceSerializer(serializers.Serializer):
@@ -35,3 +35,7 @@ class CheckoutSessionResponseSerializer(serializers.Serializer):
 class ProductIntervalSerializer(serializers.Serializer):
     products = ProductUtilSerializer(many=True)
     intervals = serializers.ListField()
+
+
+class BillingPortalSessionSerializer(serializers.Serializer):
+    billing_portal_url = BillingPortalURLField()
