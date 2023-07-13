@@ -455,10 +455,18 @@ class AuthenticatedUser(APIView):
         return Response(user_serializer.data, status=status.HTTP_200_OK)
 
     def delete(self, request):
-        # do the following:
-        #   - stop stripe subscription
-        #   - delete user & corresponding objects
-        pass
+        user = request.user
+        #  stop stripe subscription
+        user.cancel_current_subscription()
+        #  delete user & corresponding objects
+        user.delete()
+        
+        return ApiMessageResponse(
+            _(
+                "Goodbye!"
+            ),
+            status=status.HTTP_202_ACCEPTED,
+        )
 
 
 class AuthenticatedUserSettings(APIView):

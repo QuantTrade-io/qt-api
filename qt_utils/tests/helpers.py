@@ -4,7 +4,6 @@ import stripe
 from qt_security.factories import DeviceFactory
 from qt_utils.model_loaders import (
     get_outstanding_token_model,
-    get_stripe_product_model,
     get_user_model,
 )
 
@@ -18,17 +17,6 @@ def clear_stripe_customers():
 
     for user in users:
         stripe.Customer.delete(user.customer.id)
-
-
-def clear_stripe_products():
-    """
-    Clear stripe products on Unit Tests
-    """
-    Product = get_stripe_product_model()
-    products = Product.objects.all()
-
-    for product in products:
-        stripe.Product.delete(product.id)
 
 
 def generate_jwt_token(token_type, user_id, exp_time, secret_key):

@@ -11,7 +11,6 @@ from django.db.models import Max, Prefetch
 from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 from django_fsm import FSMField, transition
-from djstripe.models import Customer
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -239,15 +238,7 @@ class User(AbstractUser):
     def set_user_status_change_email(self):
         self.is_email_verified = False
 
-    def update_stripe_customer(self):
-        customer = stripe.Customer.retrieve(self.customer.id)
-
-        Customer = get_stripe_customer_model()
-        Customer.sync_from_stripe_data(customer)
-
     def has_valid_subscription(self):
-        self.update_stripe_customer()
-
         # Check if current subscription is payd/valid
         if self.customer.subscription and self.customer.subscription.is_valid():
             return True
@@ -259,11 +250,14 @@ class User(AbstractUser):
             s3_resource.Object(QTPrivateAssets.bucket_name, obj.key).delete()
 
     def cancel_current_subscription(self):
-        # canceld current subscription(s), though it should be one!
-        if not self.customer or not self.customer.subscriptions:
+        # cancel current subscription(s), though it should be one!
+        try:
+            if not self.customer or not self.customer.subscriptions.exists():
+                return
+            for subscription in self.customer.subscriptions.all():
+                subscription.cancel()
+        except get_stripe_customer_model().DoesNotExist:
             return
-        for sub in self.customer.subscriptions.all():
-            stripe.Subscription.cancel(sub.id)
 
     def cancel_old_subscriptions(self):
         if not self.customer.subscriptions.count() >= 1:
@@ -284,23 +278,19 @@ class User(AbstractUser):
 
         # Cancel oldest subscriptions
         for subscription in subscriptions_old:
-            stripe.Subscription.cancel(subscription.id)
-        self.update_stripe_customer()
+            subscription.cancel()
 
     def create_stripe_account(self):
-        # Create new Stripe Customer for newly registerd QT user
+        # Create new Stripe Customer for newly registerd QT user.
+        # Can't be done via dj-stripe.
         stripe_customer = stripe.Customer.create(email=self.email, name=self.full_name)
+
         # Sync database with newly created stripe customer
+        Customer = get_stripe_customer_model()
         djstripe_customer = Customer.sync_from_stripe_data(stripe_customer)
         self.customer = djstripe_customer
 
         return self
-
-    def delete_stripe_subscription(self):
-        stripe.Customer.delete(self.customer.id)
-
-    def delete_stripe_account(self):
-        stripe.Customer.delete(self.customer.id)
 
     def send_email_verification_mail(self):
         email_verification_token = self._create_token_for_purpose(

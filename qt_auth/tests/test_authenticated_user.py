@@ -1,5 +1,3 @@
-import stripe
-from django.conf import settings
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from rest_framework import status
@@ -7,8 +5,6 @@ from rest_framework.test import APITestCase
 
 from qt_auth.factories import UserSubscribedFactory, UserUnsubscribedFactory
 from qt_utils.tests.helpers import make_authentication_headers_auth_token
-
-stripe.api_key = settings.STRIPE_SECRET_KEY
 
 
 class AuthenticatedUserAPITests(APITestCase):
