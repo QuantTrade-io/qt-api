@@ -14,7 +14,7 @@ class AuthenticatedUserAPITests(APITestCase):
 
     def test_get_authenticated_user_without_subscription(self):
         """
-        Should return 401
+        Should return 403
         """
         user = UserUnsubscribedFactory()
         header = make_authentication_headers_auth_token(user)
@@ -59,7 +59,7 @@ class AuthenticatedUserAPITests(APITestCase):
 
     def test_patch_authenticated_user_without_subscription(self):
         """
-        Should return 401
+        Should return 403
         """
         user = UserUnsubscribedFactory()
         header = make_authentication_headers_auth_token(user)
@@ -109,6 +109,36 @@ class AuthenticatedUserAPITests(APITestCase):
             self.assertIn("city", device)
             self.assertIn("country", device)
             self.assertIn("current", device)
+
+    def test_delete_authenticated_user_without_subscription(self):
+        """
+        Should return 401
+        """
+        user = UserUnsubscribedFactory()
+        header = make_authentication_headers_auth_token(user)
+
+        url = self._get_url()
+
+        response = self.client.delete(url, **header, format="json")
+
+        import pdb
+
+        pdb.set_trace()
+
+        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(
+            response.data["detail"],
+            _("Your account is not associated with a valid subscription."),
+        )
+
+    def test_delete_authenticated_user_with_subscription(self):
+        """
+        Should return 202
+        Testing this would be too slow since we need to create a bunch
+        of Stripe objects and connect those with a User & Stripe customer
+        Source: trust me bro
+        """
+        pass
 
     def _get_url(self):
         return reverse("authenticated-user")
