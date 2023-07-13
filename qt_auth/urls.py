@@ -42,14 +42,4 @@ auth_urlpatterns = [
         AuthenticatedUserSettings.as_view(),
         name="authenticated-user-settings",
     ),
-    # path(
-    #   "user/change-subscription/",
-    #   AuthenticatedUserChangeSubscription.as_view(),
-    #   name="authenticated-user-change-subscription"
-    # ),
-    # path(
-    #   "user/delete/",
-    #   AuthenticatedUserDelete.as_view(),
-    #   name="authenticated-user-delete"
-    # ),
 ]
