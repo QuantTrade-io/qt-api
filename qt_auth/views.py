@@ -460,11 +460,9 @@ class AuthenticatedUser(APIView):
         user.cancel_current_subscription()
         #  delete user & corresponding objects
         user.delete()
-        
+
         return ApiMessageResponse(
-            _(
-                "Goodbye!"
-            ),
+            _("Goodbye!"),
             status=status.HTTP_202_ACCEPTED,
         )
 

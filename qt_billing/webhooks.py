@@ -12,7 +12,7 @@ def my_handler(event, **kwargs):
     customer_id = event.data["object"]["customer"]
 
     user = User.objects.get(customer__id=customer_id)
-    
+
     with transaction.atomic():
         user.cancel_old_subscriptions()
         user.save()

@@ -2,10 +2,7 @@ import jwt
 import stripe
 
 from qt_security.factories import DeviceFactory
-from qt_utils.model_loaders import (
-    get_outstanding_token_model,
-    get_user_model,
-)
+from qt_utils.model_loaders import get_outstanding_token_model, get_user_model
 
 
 def clear_stripe_customers():
