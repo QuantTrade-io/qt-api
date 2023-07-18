@@ -121,10 +121,6 @@ class AuthenticatedUserAPITests(APITestCase):
 
         response = self.client.delete(url, **header, format="json")
 
-        import pdb
-
-        pdb.set_trace()
-
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(
             response.data["detail"],

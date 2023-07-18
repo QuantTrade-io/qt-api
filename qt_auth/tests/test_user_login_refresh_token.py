@@ -180,6 +180,7 @@ class UserLoginRefreshTokenAPITests(APITestCase):
         self.assertEqual(response.data["account_status"], User.STATUS_TYPE_VERIFIED)
         self.assertEqual(response.data["subscribed"], True)
         self.assertIn("access_token", response.data)
+        self.assertIn("image", response.data)
         self.assertNotEqual(
             outstanding_token.device.updated_at,
             outstanding_token_updated.device.updated_at,
