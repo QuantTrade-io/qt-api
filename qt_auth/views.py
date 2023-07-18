@@ -254,6 +254,7 @@ class LoginRefreshToken(APIView):
                 "access_token": str(token.access_token),
                 "account_status": user.status,
                 "subscribed": user.has_valid_subscription(),
+                "image": user.get_image,
             },
             status=status.HTTP_200_OK,
         )
