@@ -15,6 +15,7 @@ from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from qt_security.checkers import validate_image_size_and_mime_type
 from qt_utils.helpers import aws_instance_directory_path, get_s3_image
 from qt_utils.model_loaders import (
     get_blacklisted_jwt_token_model,
@@ -214,6 +215,7 @@ class User(AbstractUser):
             self.last_name = last_name
 
         if image is not None:
+            validate_image_size_and_mime_type(image)
             self.image = image
 
         return self
