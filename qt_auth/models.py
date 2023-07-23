@@ -511,16 +511,16 @@ class User(AbstractUser):
         )
 
     def _create_email_verification_link(self, email_verification_token):
-        return "{0}/auth/email-verification?token={1}".format(
+        return "{0}/auth/verify-email?token={1}".format(
             settings.WWW_URL, email_verification_token
         )
 
     def _create_password_reset_link(self, password_reset_token):
-        return "{0}/auth/password-reset?token={1}".format(
+        return "{0}/auth/verify-password?token={1}".format(
             settings.WWW_URL, password_reset_token
         )
 
     def _create_email_reset_link(self, email_reset_token):
-        return "{0}/auth/email-reset?token={1}".format(
+        return "{0}/auth/reset-email?token={1}".format(
             settings.WWW_URL, email_reset_token
         )
