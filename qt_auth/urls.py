@@ -26,7 +26,7 @@ auth_urlpatterns = [
     ),
     path("user-login/", Login.as_view(), name="user-login"),
     path("refresh-token/", LoginRefreshToken.as_view(), name="refresh-token"),
-    path("logout/", Logout.as_view(), name="user-logout"),
+    path("user-logout/", Logout.as_view(), name="user-logout"),
     path("reset/email/", RequestResetEmail.as_view(), name="reset-email"),
     path("reset/password/", RequestResetPassword.as_view(), name="reset-password"),
     path("verify/reset-email/", VerifyResetEmail.as_view(), name="verify-reset-email"),
