@@ -100,10 +100,14 @@ class DevicesAPITests(APITestCase):
 
         current_count = 0
         for device in response.data:
+            self.assertIn("id", device)
             self.assertIn("token", device)
             self.assertIn("info", device)
             self.assertIn("city", device)
             self.assertIn("country", device)
+            self.assertIn("current", device)
+            self.assertIn("active", device)
+            self.assertIn("last_used", device)
             if device.get("current"):
                 current_count += 1
 

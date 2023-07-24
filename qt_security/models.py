@@ -82,6 +82,13 @@ class Device(AbstractTimeStampModel):
         if self.image:
             return self.image.get_url
 
+    @property
+    def active(self):
+        # check if there is a blacklisted token related to this device token
+        if hasattr(self.token, "blacklistedtoken"):
+            return False
+        return True
+
     @classmethod
     def create_device(cls, user, token, info, city, country):
         device = cls.objects.create(

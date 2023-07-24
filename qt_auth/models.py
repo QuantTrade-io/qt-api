@@ -7,8 +7,9 @@ from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.core.mail import EmailMultiAlternatives
 from django.db import models
-from django.db.models import Max, Prefetch
+from django.db.models import Max, Prefetch, Q
 from django.template.loader import render_to_string
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django_fsm import FSMField, transition
 from rest_framework.exceptions import PermissionDenied, ValidationError
@@ -474,9 +475,19 @@ class User(AbstractUser):
         refresh = RefreshToken.for_user(self)
         return {"refresh": str(refresh), "access": str(refresh.access_token)}
 
-    def get_devices(self):
-        # Only return devices which tokens aren't blacklisted
-        return self.devices.filter(token__blacklistedtoken=None)
+    def get_current_devices(self):
+        # Annotate the devices with the latest blacklisted token date
+        devices_with_latest_blacklisted_date = self.devices.annotate(
+            latest_blacklisted_date=Max("token__blacklistedtoken__blacklisted_at")
+        )
+
+        # Combine the conditions using Q objects and annotations
+        query = Q(token__blacklistedtoken__isnull=True) | Q(
+            latest_blacklisted_date__gte=timezone.now() - timezone.timedelta(days=5)
+        )
+
+        # Fetch the devices that satisfy the combined condition
+        return devices_with_latest_blacklisted_date.filter(query)
 
     def blacklist_all_outstanding_tokens(self):
         outstanding_tokens = self.outstandingtoken_set.filter(blacklistedtoken=None)

@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate
 from django.db import transaction
+from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from rest_framework import status
 from rest_framework.exceptions import AuthenticationFailed
@@ -247,6 +248,7 @@ class LoginRefreshToken(APIView):
         with transaction.atomic():
             device.city = city
             device.country = country
+            device.updated_at = timezone.now()
             device.save()
 
         return Response(

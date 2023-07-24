@@ -21,6 +21,8 @@ class DeviceSerializer(serializers.Serializer):
     city = serializers.CharField()
     country = serializers.CharField()
     current = CurrentField()
+    active = serializers.BooleanField()
+    last_used = serializers.DateTimeField(source="updated_at")
 
 
 class DeleteDeviceItemSerializer(serializers.Serializer):

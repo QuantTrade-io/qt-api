@@ -32,7 +32,9 @@ class Devices(APIView):
         current_token = data.get("refresh_token")
         user = request.user
         response_serializer = self.serializer_class(
-            user.get_devices(), context={"current_token": current_token}, many=True
+            user.get_current_devices(),
+            context={"current_token": current_token},
+            many=True,
         )
 
         return Response(response_serializer.data, status=status.HTTP_200_OK)
