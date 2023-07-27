@@ -101,15 +101,18 @@ class DevicesAPITests(APITestCase):
         current_count = 0
         for device in response.data:
             self.assertIn("id", device)
-            self.assertIn("token", device)
+            self.assertIn("image", device)
             self.assertIn("info", device)
-            self.assertIn("city", device)
-            self.assertIn("country", device)
-            self.assertIn("current", device)
-            self.assertIn("active", device)
-            self.assertIn("last_used", device)
-            if device.get("current"):
-                current_count += 1
+            for session in device["sessions"]:
+                self.assertIn("id", session)
+                self.assertIn("token", session)
+                self.assertIn("city", session)
+                self.assertIn("country", session)
+                self.assertIn("current", session)
+                self.assertIn("active", session)
+                self.assertIn("last_used", session)
+                if session.get("current"):
+                    current_count += 1
 
         # # Check if exactly one device has the attribute `current` set to True.
         self.assertEqual(current_count, 1)

@@ -9,12 +9,12 @@ from qt_utils.model_loaders import get_user_model
 from qt_utils.tests.helpers import make_authentication_headers_auth_token
 
 
-class DeviceItemAPITests(APITestCase):
+class SessionItemAPITests(APITestCase):
     """
-    Test Device Item API
+    Test Session Item API
     """
 
-    def test_delete_device_item_un_auth(self):
+    def test_delete_session_item_un_auth(self):
         """
         Should return 401
         """
@@ -40,9 +40,9 @@ class DeviceItemAPITests(APITestCase):
         response = self.client.delete(url, **header, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(response.data["device_id"][0], _("Device not found."))
+        self.assertEqual(response.data["session_id"][0], _("Session not found."))
 
-    def test_delete_device_item_successfull(self):
+    def test_delete_session_item_successfull(self):
         """
         Should return 200
         """
@@ -50,7 +50,7 @@ class DeviceItemAPITests(APITestCase):
         header = make_authentication_headers_auth_token(user)
         user_device = user.devices.first()
 
-        url = self._get_url(user_device.id)
+        url = self._get_url(user_device.sessions.first().id)
 
         response = self.client.delete(url, **header, format="json")
 
@@ -59,7 +59,7 @@ class DeviceItemAPITests(APITestCase):
             response.data["message"],
             _(
                 """
-                Device succesfully deleted form the logged in list,
+                Session succesfully deleted form the logged in list,
                 it could take a couple of minutes
                 before the changes are affected on the device itself.
                 """
@@ -70,7 +70,7 @@ class DeviceItemAPITests(APITestCase):
         User = get_user_model()
 
         with self.assertRaises(PermissionDenied):
-            User.get_access_token_for_refresh_token(user_device.token.token)
+            User.get_access_token_for_refresh_token(user_device.sessions.first().id)
 
-    def _get_url(self, device_id):
-        return reverse("device", kwargs={"device_id": device_id})
+    def _get_url(self, session_id):
+        return reverse("sessions", kwargs={"session_id": session_id})

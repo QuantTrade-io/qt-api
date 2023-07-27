@@ -1,7 +1,7 @@
 import jwt
 import stripe
 
-from qt_security.factories import DeviceFactory
+from qt_security.factories import DeviceFactory, SessionFactory
 from qt_utils.model_loaders import get_outstanding_token_model, get_user_model
 
 
@@ -30,7 +30,8 @@ def make_authentication_headers_auth_token(user):
     # Create corresponding Device with this token
     OutstandingToken = get_outstanding_token_model()
     outstanding_token = OutstandingToken.objects.get(token=token["refresh"])
-    DeviceFactory(user=user, token=outstanding_token)
+    device = DeviceFactory(user=user)
+    SessionFactory(device=device, token=outstanding_token)
 
     return {"HTTP_AUTHORIZATION": f"Bearer {token['access']}"}
 
@@ -41,6 +42,7 @@ def get_refresh_token_for_user(user):
     # Create corresponding Device with this token
     OutstandingToken = get_outstanding_token_model()
     outstanding_token = OutstandingToken.objects.get(token=token["refresh"])
-    DeviceFactory(user=user, token=outstanding_token)
+    device = DeviceFactory(user=user)
+    SessionFactory(device=device, token=outstanding_token)
 
     return token["refresh"]

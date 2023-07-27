@@ -28,6 +28,10 @@ def get_device_model():
     return apps.get_model("qt_security.Device")
 
 
+def get_session_model():
+    return apps.get_model("qt_security.Session")
+
+
 # UTILS
 def get_newsletter_subscriber_model():
     return apps.get_model("qt_utils.NewsletterSubscriber")

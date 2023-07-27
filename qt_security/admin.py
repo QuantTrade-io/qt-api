@@ -2,7 +2,7 @@ from django.contrib import admin
 from django.core.management import call_command
 from django.utils.safestring import mark_safe
 
-from .models import BlacklistedJWTToken, Device, DeviceImage
+from .models import BlacklistedJWTToken, Device, DeviceImage, Session
 
 
 class BlacklistedJWTTokenAdmin(admin.ModelAdmin):
@@ -54,6 +54,29 @@ class DeviceImageAdmin(admin.ModelAdmin):
             return "(No image)"
 
 
+class SessionInline(admin.TabularInline):
+    model = Session
+    extra = 0
+
+    readonly_fields = (
+        "token",
+        "city",
+        "country",
+        "created_at",
+        "updated_at",
+    )
+
+
+class SessionAdmin(admin.ModelAdmin):
+    readonly_fields = (
+        "token",
+        "city",
+        "country",
+        "created_at",
+        "updated_at",
+    )
+
+
 class DeviceAdmin(admin.ModelAdmin):
     list_display = (
         "get_name",
@@ -69,12 +92,13 @@ class DeviceAdmin(admin.ModelAdmin):
     )
     exclude = ("image",)
     actions = ["flush_expired_tokens_and_devices"]
+    inlines = [SessionInline]
 
     def get_name(self, obj):
         return str(obj)
 
     def get_user(self, obj):
-        return obj.token.user
+        return obj.user
 
     def get_image_preview(self, obj):
         if obj.image:
@@ -117,3 +141,4 @@ class DeviceAdmin(admin.ModelAdmin):
 admin.site.register(BlacklistedJWTToken, BlacklistedJWTTokenAdmin)
 admin.site.register(DeviceImage, DeviceImageAdmin)
 admin.site.register(Device, DeviceAdmin)
+admin.site.register(Session, SessionAdmin)
