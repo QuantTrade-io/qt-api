@@ -7,7 +7,7 @@ from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.core.mail import EmailMultiAlternatives
 from django.db import models
-from django.db.models import Max, Prefetch, Q
+from django.db.models import Max, Q
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
@@ -475,19 +475,22 @@ class User(AbstractUser):
         refresh = RefreshToken.for_user(self)
         return {"refresh": str(refresh), "access": str(refresh.access_token)}
 
-    def get_current_devices(self):
-        # Annotate the devices with the latest blacklisted token date
-        devices_with_latest_blacklisted_date = self.devices.annotate(
-            latest_blacklisted_date=Max("token__blacklistedtoken__blacklisted_at")
+    def get_current_devices_and_session(self):
+        return (
+            self.devices.prefetch_related(
+                "sessions__token", "sessions__token__blacklistedtoken"
+            )
+            .annotate(latest_session_update=Max("sessions__updated_at"))
+            .filter(
+                Q(sessions__token__blacklistedtoken__isnull=True)
+                | Q(
+                    sessions__token__blacklistedtoken__isnull=False,
+                    sessions__updated_at__gte=timezone.now()
+                    - timezone.timedelta(days=5),
+                )
+            )
+            .distinct()
         )
-
-        # Combine the conditions using Q objects and annotations
-        query = Q(token__blacklistedtoken__isnull=True) | Q(
-            latest_blacklisted_date__gte=timezone.now() - timezone.timedelta(days=5)
-        )
-
-        # Fetch the devices that satisfy the combined condition
-        return devices_with_latest_blacklisted_date.filter(query)
 
     def blacklist_all_outstanding_tokens(self):
         outstanding_tokens = self.outstandingtoken_set.filter(blacklistedtoken=None)
@@ -500,11 +503,6 @@ class User(AbstractUser):
         outstanding_token = OutstandingToken.objects.get(token=token)
         BlacklistedToken = get_blacklisted_token_model()
         BlacklistedToken.objects.create(token=outstanding_token)
-
-    def blacklist_token_by_device_id(self, device_id):
-        device = self.devices.prefetch_related(Prefetch("token")).get(pk=device_id)
-        BlacklistedToken = get_blacklisted_token_model()
-        _, _ = BlacklistedToken.objects.get_or_create(token=device.token)
 
     def _create_token_for_purpose(self, token_type, days_till_expiry=1):
         # Create token for one of the JWT token types we support internally:

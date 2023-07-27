@@ -8,7 +8,7 @@ from qt_auth.factories import (
     UserSubscribedFactory,
     UserUnsubscribedFactory,
 )
-from qt_security.factories import DeviceFactory
+from qt_security.factories import DeviceFactory, SessionFactory
 from qt_utils.model_loaders import (
     get_blacklisted_token_model,
     get_outstanding_token_model,
@@ -128,11 +128,12 @@ class UserLoginRefreshTokenAPITests(APITestCase):
         user = UserUnsubscribedFactory()
         token = user.get_jwt_token()
 
-        # Ugly way of creating a Device, since it is required in the
+        # Ugly way of creating a Device & a Session, since it is required in the
         # LoginRefreshToken view
         OutstandingToken = get_outstanding_token_model()
         outstanding_token = OutstandingToken.objects.get(token=token["refresh"])
-        DeviceFactory(user=user, token=outstanding_token)
+        device = DeviceFactory(user=user)
+        SessionFactory(device=device, token=outstanding_token)
 
         data = {
             "refresh_token": token["refresh"],
@@ -147,8 +148,8 @@ class UserLoginRefreshTokenAPITests(APITestCase):
         self.assertEqual(response.data["subscribed"], False)
         self.assertIn("access_token", response.data)
         self.assertNotEqual(
-            outstanding_token.device.updated_at,
-            outstanding_token_updated.device.updated_at,
+            outstanding_token.session.updated_at,
+            outstanding_token_updated.session.updated_at,
         )
 
     def test_login_refresh_token_subscribed_user(self):
@@ -166,7 +167,8 @@ class UserLoginRefreshTokenAPITests(APITestCase):
         # LoginRefreshToken view
         OutstandingToken = get_outstanding_token_model()
         outstanding_token = OutstandingToken.objects.get(token=token["refresh"])
-        DeviceFactory(user=user, token=outstanding_token)
+        device = DeviceFactory(user=user)
+        SessionFactory(device=device, token=outstanding_token)
 
         data = {
             "refresh_token": token["refresh"],
@@ -182,8 +184,8 @@ class UserLoginRefreshTokenAPITests(APITestCase):
         self.assertIn("access_token", response.data)
         self.assertIn("image", response.data)
         self.assertNotEqual(
-            outstanding_token.device.updated_at,
-            outstanding_token_updated.device.updated_at,
+            outstanding_token.session.updated_at,
+            outstanding_token_updated.session.updated_at,
         )
 
     def test_login_refresh_token_blacklisted_token(self):
@@ -202,7 +204,8 @@ class UserLoginRefreshTokenAPITests(APITestCase):
         # LoginRefreshToken view
         OutstandingToken = get_outstanding_token_model()
         outstanding_token = OutstandingToken.objects.get(token=token["refresh"])
-        DeviceFactory(user=user, token=outstanding_token)
+        device = DeviceFactory(user=user)
+        SessionFactory(device=device, token=outstanding_token)
 
         outstanding_token = OutstandingToken.objects.get(token=token["refresh"])
         BlacklistedToken = get_blacklisted_token_model()
@@ -219,8 +222,8 @@ class UserLoginRefreshTokenAPITests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
         self.assertEqual(response.data["detail"], _("Unable to use token"))
         self.assertEqual(
-            outstanding_token.device.updated_at,
-            outstanding_token_updated.device.updated_at,
+            outstanding_token.session.updated_at,
+            outstanding_token_updated.session.updated_at,
         )
 
     def _get_url(self):

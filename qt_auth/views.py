@@ -12,6 +12,7 @@ from qt_security.permissions import HasValidSubscription
 from qt_utils.model_loaders import (
     get_device_model,
     get_outstanding_token_model,
+    get_session_model,
     get_user_model,
 )
 from qt_utils.responses import ApiMessageResponse
@@ -191,10 +192,15 @@ class Login(APIView):
         outstanding_token = OutstandingToken.objects.get(token=token["refresh"])
 
         Device = get_device_model()
-        info, city, country = Device.get_information_from_request(request)
+        info, image = Device.get_information_from_request(request)
+
+        device, __ = Device.objects.get_or_create(user=user, info=info, image=image)
+
+        Session = get_session_model()
+        city, country = Session.get_information_from_request(request)
 
         with transaction.atomic():
-            Device.create_device(user, outstanding_token, info, city, country)
+            Session.create_session(device, outstanding_token, city, country)
 
         return Response(
             {
@@ -241,15 +247,15 @@ class LoginRefreshToken(APIView):
         OutstandingToken = get_outstanding_token_model()
         outstanding_token = OutstandingToken.objects.get(token=refresh_token)
 
-        Device = get_device_model()
-        device = Device.objects.get(token=outstanding_token)
-        __, city, country = Device.get_information_from_request(request)
+        Session = get_session_model()
+        session = Session.objects.get(token=outstanding_token)
+        city, country = Session.get_information_from_request(request)
 
         with transaction.atomic():
-            device.city = city
-            device.country = country
-            device.updated_at = timezone.now()
-            device.save()
+            session.city = city
+            session.country = country
+            session.updated_at = timezone.now()
+            session.save()
 
         return Response(
             {

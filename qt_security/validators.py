@@ -1,14 +1,14 @@
 from django.utils.translation import gettext_lazy as _
 from rest_framework.exceptions import ValidationError
 
-from qt_utils.model_loaders import get_device_model, get_outstanding_token_model
+from qt_utils.model_loaders import get_outstanding_token_model, get_session_model
 
 
-def device_id_exists(device_id):
-    Device = get_device_model()
-    if not Device.objects.filter(pk=device_id).exists():
+def session_id_exists(session_id):
+    Session = get_session_model()
+    if not Session.objects.filter(pk=session_id).exists():
         raise ValidationError(
-            _("Device not found."),
+            _("Session not found."),
         )
 
 

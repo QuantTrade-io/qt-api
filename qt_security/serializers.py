@@ -3,7 +3,7 @@ from rest_framework import serializers
 from qt_utils.serializer_fields import ImageField
 
 from .serializer_fields import CurrentField
-from .validators import device_id_exists, refresh_token_exists
+from .validators import refresh_token_exists, session_id_exists
 
 
 class GetDeviceSerializer(serializers.Serializer):
@@ -13,11 +13,9 @@ class GetDeviceSerializer(serializers.Serializer):
     )
 
 
-class DeviceSerializer(serializers.Serializer):
+class SessionSerializer(serializers.Serializer):
     id = serializers.CharField()
     token = serializers.CharField()
-    image = ImageField()
-    info = serializers.CharField()
     city = serializers.CharField()
     country = serializers.CharField()
     current = CurrentField()
@@ -25,8 +23,15 @@ class DeviceSerializer(serializers.Serializer):
     last_used = serializers.DateTimeField(source="updated_at")
 
 
-class DeleteDeviceItemSerializer(serializers.Serializer):
-    device_id = serializers.IntegerField(
-        validators=[device_id_exists],
+class DeviceSerializer(serializers.Serializer):
+    id = serializers.CharField()
+    image = ImageField()
+    info = serializers.CharField()
+    sessions = SessionSerializer(many=True)
+
+
+class DeleteSessionItemSerializer(serializers.Serializer):
+    session_id = serializers.IntegerField(
+        validators=[session_id_exists],
         required=True,
     )

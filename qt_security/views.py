@@ -5,10 +5,11 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from qt_utils.model_loaders import get_session_model
 from qt_utils.responses import ApiMessageResponse
 
 from .serializers import (
-    DeleteDeviceItemSerializer,
+    DeleteSessionItemSerializer,
     DeviceSerializer,
     GetDeviceSerializer,
 )
@@ -32,7 +33,7 @@ class Devices(APIView):
         current_token = data.get("refresh_token")
         user = request.user
         response_serializer = self.serializer_class(
-            user.get_current_devices(),
+            user.get_current_devices_and_session(),
             context={"current_token": current_token},
             many=True,
         )
@@ -40,32 +41,34 @@ class Devices(APIView):
         return Response(response_serializer.data, status=status.HTTP_200_OK)
 
 
-class DeviceItem(APIView):
+class SessionItem(APIView):
     """
-    The API for deleting a single Device
+    The API for blacklisting a single Session
     """
 
     permission_classes = (IsAuthenticated,)
-    serializer_class = DeleteDeviceItemSerializer
+    serializer_class = DeleteSessionItemSerializer
 
-    def delete(self, request, device_id):
+    def delete(self, request, session_id):
         # this is not a real delete, but rather a Blacklist
-        request_data = self._get_request_data(request, device_id)
-        serializer = DeleteDeviceItemSerializer(data=request_data)
+        request_data = self._get_request_data(request, session_id)
+        serializer = self.serializer_class(data=request_data)
         serializer.is_valid(raise_exception=True)
         return self.valid_request_data(serializer.validated_data, request)
 
     def valid_request_data(self, data, request):
-        device_id = data.get("device_id")
-        user = request.user
+        session_id = data.get("session_id")
+
+        Session = get_session_model()
+        session = Session.objects.get(pk=session_id)
 
         with transaction.atomic():
-            user.blacklist_token_by_device_id(device_id)
+            session.blacklist_token()
 
         return ApiMessageResponse(
             _(
                 """
-                Device succesfully deleted form the logged in list,
+                Session succesfully deleted form the logged in list,
                 it could take a couple of minutes
                 before the changes are affected on the device itself.
                 """
@@ -73,7 +76,7 @@ class DeviceItem(APIView):
             status=status.HTTP_202_ACCEPTED,
         )
 
-    def _get_request_data(self, request, device_id):
+    def _get_request_data(self, request, session_id):
         request_data = request.data.copy()
-        request_data["device_id"] = device_id
+        request_data["session_id"] = session_id
         return request_data
