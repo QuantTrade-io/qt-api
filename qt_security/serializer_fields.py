@@ -1,3 +1,4 @@
+from datetime import datetime
 from rest_framework.fields import Field
 
 
@@ -20,3 +21,11 @@ class ImageField(Field):
 
     def to_representation(self, device):
         return device.get_image
+
+
+class DateField(Field):
+    def __init__(self, source=None, **kwargs):
+        super(DateField, self).__init__(source=source, **kwargs)
+
+    def to_representation(self, value):
+        return value.strftime("%Y-%m-%d %H:%M:%S")
