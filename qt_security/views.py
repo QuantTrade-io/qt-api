@@ -33,7 +33,7 @@ class Devices(APIView):
         current_token = data.get("refresh_token")
         user = request.user
         response_serializer = self.serializer_class(
-            user.get_current_devices_and_session(),
+            user.get_active_devices_and_sessions(),
             context={"current_token": current_token},
             many=True,
         )

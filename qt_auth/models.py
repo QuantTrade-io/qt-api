@@ -9,12 +9,13 @@ from django.core.mail import EmailMultiAlternatives
 from django.db import models
 from django.db.models import Max, Q
 from django.template.loader import render_to_string
-from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django_fsm import FSMField, transition
 from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
+
+from django.db.models import Count
 
 from qt_security.checkers import validate_image_size_and_mime_type
 from qt_utils.helpers import aws_instance_directory_path, get_s3_image
@@ -475,19 +476,15 @@ class User(AbstractUser):
         refresh = RefreshToken.for_user(self)
         return {"refresh": str(refresh), "access": str(refresh.access_token)}
 
-    def get_current_devices_and_session(self):
+    def get_active_devices_and_sessions(self):
         return (
             self.devices.prefetch_related(
                 "sessions__token", "sessions__token__blacklistedtoken"
             )
-            .annotate(latest_session_update=Max("sessions__updated_at"))
+            .annotate(num_sessions=Count("sessions"))
             .filter(
-                Q(sessions__token__blacklistedtoken__isnull=True)
-                | Q(
-                    sessions__token__blacklistedtoken__isnull=False,
-                    sessions__updated_at__gte=timezone.now()
-                    - timezone.timedelta(days=5),
-                )
+                Q(sessions__token__blacklistedtoken__isnull=True),
+                num_sessions__gt=0  # Filter out devices with zero sessions
             )
             .distinct()
         )
