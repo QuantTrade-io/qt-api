@@ -46,20 +46,6 @@ class AuthenticatedUserAPITests(APITestCase):
         self.assertEqual(response.data["first_name"], user.first_name)
         self.assertEqual(response.data["last_name"], user.last_name)
         self.assertEqual(response.data["image"], user.image)
-        self.assertEqual(len(response.data["devices"]), 1)
-
-        for device in response.data["devices"]:
-            self.assertIn("id", device)
-            self.assertIn("image", device)
-            self.assertIn("info", device)
-            for session in device["sessions"]:
-                self.assertIn("id", session)
-                self.assertIn("token", session)
-                self.assertIn("city", session)
-                self.assertIn("country", session)
-                self.assertIn("current", session)
-                self.assertIn("active", session)
-                self.assertIn("last_used", session)
 
     def test_patch_authenticated_user_without_subscription(self):
         """
@@ -103,20 +89,6 @@ class AuthenticatedUserAPITests(APITestCase):
         self.assertEqual(response.data["first_name"], first_name)
         self.assertEqual(response.data["last_name"], last_name)
         self.assertEqual(response.data["image"], user.image)
-        self.assertEqual(len(response.data["devices"]), 1)
-
-        for device in response.data["devices"]:
-            self.assertIn("id", device)
-            self.assertIn("image", device)
-            self.assertIn("info", device)
-            for session in device["sessions"]:
-                self.assertIn("id", session)
-                self.assertIn("token", session)
-                self.assertIn("city", session)
-                self.assertIn("country", session)
-                self.assertIn("current", session)
-                self.assertIn("active", session)
-                self.assertIn("last_used", session)
 
     def test_delete_authenticated_user_without_subscription(self):
         """

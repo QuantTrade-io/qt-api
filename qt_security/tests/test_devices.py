@@ -105,7 +105,6 @@ class DevicesAPITests(APITestCase):
             self.assertIn("info", device)
             for session in device["sessions"]:
                 self.assertIn("id", session)
-                self.assertIn("token", session)
                 self.assertIn("city", session)
                 self.assertIn("country", session)
                 self.assertIn("current", session)

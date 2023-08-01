@@ -2,7 +2,6 @@ from django.contrib.auth.password_validation import validate_password
 from rest_framework import serializers
 
 from qt.settings_base import NAME_MAX_LENGTH, PASSWORD_MAX_LENGTH, PASSWORD_MIN_LENGTH
-from qt_security.serializers import DeviceSerializer
 from qt_utils.serializer_fields import ImageField
 
 from .validators import (
@@ -74,7 +73,6 @@ class GetAuthenticatedUserSerializer(serializers.Serializer):
     first_name = serializers.CharField(required=True)
     last_name = serializers.CharField(required=True)
     image = ImageField()
-    devices = DeviceSerializer(many=True)
 
 
 class PatchAuthenticatedUserSerializer(serializers.Serializer):
