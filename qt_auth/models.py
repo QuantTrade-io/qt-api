@@ -7,7 +7,7 @@ from django.conf import settings
 from django.contrib.auth.models import AbstractUser
 from django.core.mail import EmailMultiAlternatives
 from django.db import models
-from django.db.models import Max, Q
+from django.db.models import Count, Max, Prefetch, Q
 from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
 from django_fsm import FSMField, transition
@@ -15,14 +15,13 @@ from rest_framework.exceptions import PermissionDenied, ValidationError
 from rest_framework_simplejwt.exceptions import TokenError
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from django.db.models import Count
-
 from qt_security.checkers import validate_image_size_and_mime_type
 from qt_utils.helpers import aws_instance_directory_path, get_s3_image
 from qt_utils.model_loaders import (
     get_blacklisted_jwt_token_model,
     get_blacklisted_token_model,
     get_outstanding_token_model,
+    get_session_model,
     get_stripe_customer_model,
 )
 from qt_utils.models import QTPrivateAssets, QTPublicAssets
@@ -477,14 +476,20 @@ class User(AbstractUser):
         return {"refresh": str(refresh), "access": str(refresh.access_token)}
 
     def get_active_devices_and_sessions(self):
+        Session = get_session_model()
         return (
             self.devices.prefetch_related(
-                "sessions__token", "sessions__token__blacklistedtoken"
+                Prefetch(
+                    queryset=Session.objects.filter(
+                        token__blacklistedtoken__isnull=True
+                    ),
+                    lookup="sessions",
+                )
             )
             .annotate(num_sessions=Count("sessions"))
             .filter(
                 Q(sessions__token__blacklistedtoken__isnull=True),
-                num_sessions__gt=0  # Filter out devices with zero sessions
+                num_sessions__gt=0,  # Filter out devices with zero sessions
             )
             .distinct()
         )

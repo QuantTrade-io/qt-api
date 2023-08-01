@@ -31,10 +31,10 @@ class DeviceSerializer(serializers.Serializer):
 
     def to_representation(self, instance):
         data = super().to_representation(instance)
-        sessions = data['sessions']
+        sessions = data["sessions"]
         # Sort the sessions list based on the "current" field, where 'True' comes first.
-        sessions = sorted(sessions, key=lambda x: not x['current'])
-        data['sessions'] = sessions
+        sessions = sorted(sessions, key=lambda x: not x["current"])
+        data["sessions"] = sessions
         return data
 
 
