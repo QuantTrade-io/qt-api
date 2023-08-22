@@ -32,6 +32,8 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Application definition
 
 INSTALLED_APPS = [
+    # Daphe
+    "daphne",
     # Built-in
     "django.contrib.admin",
     "django.contrib.auth",
@@ -40,8 +42,11 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     # 3th party
+    "channels",
+    "channels_auth_token_middlewares",
     "corsheaders",
     "djstripe",
+    "encrypted_model_fields",
     "modeltranslation",
     "ordered_model",
     "rest_framework",
@@ -52,6 +57,7 @@ INSTALLED_APPS = [
     # local
     "qt_auth",
     "qt_billing",
+    "qt_brokers",
     "qt_security",
     "qt_utils",
 ]
@@ -86,7 +92,24 @@ TEMPLATES = [
     },
 ]
 
+# WSGI && ASGI
+
 WSGI_APPLICATION = "qt.wsgi.application"
+ASGI_APPLICATION = 'qt.asgi.application'
+
+
+# Websocket Channel layer
+
+REDIS_URL = os.getenv('REDIS_URL', 'redis://localhost:6379')
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [REDIS_URL],
+        },
+    },
+}
 
 
 # Database
@@ -157,6 +180,10 @@ SIMPLE_JWT = {
 
 WWW_URL = os.environ.get("WWW_URL", "http://localhost:3000")
 API_URL = os.environ.get("API_URL", "http://localhost:8000")
+
+# ENCRYPTION KEY
+FIELD_ENCRYPTION_KEY = os.environ.get("FIELD_ENCRYPTION_KEY")
+
 
 # Stripe Settings
 STRIPE_LIVE_MODE = os.environ.get("STRIPE_LIVE_MODE", False)

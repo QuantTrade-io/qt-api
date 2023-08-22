@@ -17,6 +17,7 @@ from django.contrib import admin
 from django.urls import include, path
 
 from qt_auth.urls import auth_urlpatterns
+from qt_brokers.urls import brokers_urlpatterns
 from qt_billing.urls import billing_urlpatterns
 from qt_security.urls import security_urlpatterns
 from qt_utils.urls import utils_urlpatterns
@@ -24,6 +25,7 @@ from qt_utils.urls import utils_urlpatterns
 api_patterns = [
     path("auth/", include(auth_urlpatterns)),
     path("billing/", include(billing_urlpatterns)),
+    path("brokers/", include(brokers_urlpatterns)),
     path("security/", include(security_urlpatterns)),
     path("utils/", include(utils_urlpatterns)),
 ]

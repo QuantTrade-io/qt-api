@@ -20,6 +20,7 @@ from qt_utils.helpers import aws_instance_directory_path, get_s3_image
 from qt_utils.model_loaders import (
     get_blacklisted_jwt_token_model,
     get_blacklisted_token_model,
+    get_broker_account_model,
     get_outstanding_token_model,
     get_session_model,
     get_stripe_customer_model,
@@ -27,6 +28,7 @@ from qt_utils.model_loaders import (
 from qt_utils.models import QTPrivateAssets, QTPublicAssets
 
 from .managers import CustomUserManager
+from .checkers import check_can_connect_with_broker
 
 DEFAULT_PROFILE_IMAGE_KEY = "images/unkown_user.png"
 
@@ -535,3 +537,41 @@ class User(AbstractUser):
         return "{0}/auth/reset-email?token={1}".format(
             settings.WWW_URL, email_reset_token
         )
+
+    ###########
+    # Brokers #
+    ###########
+    def create_broker_account(self, broker_id, authentication_method_id, email, username, password):
+        kwargs = check_can_connect_with_broker(broker_id, authentication_method_id, email, username, password)
+
+        BrokerAccount = get_broker_account_model()
+        BrokerAccount.create_broker_account(user_id=self.pk, broker_id=broker_id, authentication_method_id=authentication_method_id, email=email, username=username, password=password, **kwargs)
+
+    def update_broker_account_with_id(self, broker_account_id, authentication_method_id, email, username, password):
+        broker_account = self.broker_accounts.select_related('broker', 'authentication_method').get(pk=broker_account_id)
+
+        if authentication_method_id is not None:
+            broker_account.authentication_method_id = authentication_method_id
+
+        if username is not None:
+            broker_account.username = username
+        
+        if email is not None:
+            broker_account.email = email
+
+        if password is not None:
+            broker_account.password = password
+
+        kwargs = check_can_connect_with_broker(broker_account.broker.id, broker_account.authentication_method.id, broker_account.email, broker_account.username, broker_account.password)
+        broker_account.update(**kwargs)
+
+        return broker_account
+
+    def get_broker_account_by_id(self, broker_account_id):
+        return self.broker_accounts.select_related('broker', 'authentication_method').get(pk=broker_account_id)
+
+    def get_all_broker_accounts(self):
+        return self.broker_accounts.select_related('broker', 'authentication_method').all()
+
+    def delete_broker_account_by_id(self, broker_account_id):
+        return self.broker_accounts.get(pk=broker_account_id).delete()

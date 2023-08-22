@@ -19,6 +19,17 @@ def get_unique_selling_point_model_through_model():
     return apps.get_model("qt_billing.ProductUniqueSellingPointThroughModel")
 
 
+# BROKERS
+def get_broker_model():
+    return apps.get_model("qt_brokers.Broker")
+
+def get_broker_authentication_method_model():
+    return apps.get_model("qt_brokers.BrokerAuthenticationMethod")
+
+def get_broker_account_model():
+    return apps.get_model("qt_brokers.BrokerAccount")
+
+
 # SECURITY
 def get_blacklisted_jwt_token_model():
     return apps.get_model("qt_security.BlacklistedJWTToken")

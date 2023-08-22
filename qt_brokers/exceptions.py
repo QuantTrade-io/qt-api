@@ -1,0 +1,2 @@
+class BrokerAccountCreationError(Exception):
+    pass

@@ -7,6 +7,9 @@
 
 from .settings_base import *  # noqa
 
+# ENCRYPTION KEY
+FIELD_ENCRYPTION_KEY = ""
+
 # AWS config
 AWS_DEFAULT_REGION = ""
 AWS_ACCESS_KEY_ID = ""

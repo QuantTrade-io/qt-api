@@ -56,7 +56,7 @@ class SessionItem(APIView):
         serializer.is_valid(raise_exception=True)
         return self.valid_request_data(serializer.validated_data, request)
 
-    def valid_request_data(self, data, request):
+    def valid_request_data(self, data):
         session_id = data.get("session_id")
 
         Session = get_session_model()
