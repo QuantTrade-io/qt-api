@@ -1,3 +1,5 @@
+import json
+
 from django.utils.translation import gettext_lazy as _
 from django.core.exceptions import FieldError
 from django.db import models
@@ -101,19 +103,42 @@ class BrokerAccount(models.Model):
         self.save()
     
     def open_broker_connection(self):
-        self.broker_connection = authenticate(self.broker.name, self.auth_method, email=self.email, username=self.username, password=self.password, int_account=self.int_account)
+        # check if there is an existing broker connection
+        if self.broker_connection:
+            return
+
+        self.broker_connection = authenticate(Brokers(self.broker.name), AuthenticationMethods(self.authentication_method.method), email=self.email, username=self.username, password=self.password, int_account=self.int_account)
         # store int_account if broker is Brokers.DEGIRO
         if self.broker.name == Brokers.DEGIRO and not self.int_account:
             self.int_account = self.broker_connection.int_account
             self.save()
     
     def close_broker_connection(self):
-        logout(self.broker_connection, self.authentication_method)
+        logout(self.broker_connection, AuthenticationMethods(self.authentication_method.method))
+    
+    def get_holdings_from_broker(self):
+        self.open_broker_connection()
+        return json.loads(self.broker_connection.get_current_stock_holdings())
 
-    def update_holdings(self):
-        # create, update or delete holdings
-        broker_connection = self.open_broker_connection()
-        current_holdings = broker_connection.get_current_holdings()
+    def set_holdings_from_broker(self):
+        broker_holdings = self.get_holdings_from_broker()
+
+        for broker_holding in broker_holdings:
+            holding = Holding(
+                internal_id=broker_holding["internal_id"],
+                isin=broker_holding["isin"] or "",
+                account=self,
+                company=broker_holding["company"] or "",
+                ticker=broker_holding["ticker"] or "",
+                ticker_suffix=broker_holding["ticker_suffix"] or "",
+                exchange_id=broker_holding["exchange_id"] or "",
+                exchange_name=broker_holding["exchange_name"] or "",
+                exchange_city=broker_holding["exchange_city"] or "",
+                exchange_country=broker_holding["exchange_country"] or "",
+                currency=broker_holding["currency"] or "",
+                quantity=broker_holding["quantity"],
+            )
+            holding.save()
 
 
 class Holding(models.Model):
@@ -130,6 +155,13 @@ class Holding(models.Model):
     exchange_country = models.CharField(max_length=128, blank=True, null=True)
     currency = models.CharField(max_length=5)
     quantity = models.DecimalField(max_digits=10, decimal_places=2)
+
+    def __str__(self):
+        return f"{self.account} | {self.ticker_suffix} | {self.currency}"
+
+    @classmethod
+    def get_all_unique_stock_suffices(cls):
+        return cls.objects.values_list('ticker_suffix', flat=True).distinct()
 
 
 class CashPosition(models.Model):

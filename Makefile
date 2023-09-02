@@ -47,3 +47,15 @@ stripe_listen:
 
 stripe_trigger:
 	stripe trigger $(event)
+
+celery_start:
+	supervisorctl -c supervisor.conf start all
+
+celery_stop:
+	supervisorctl -c supervisor.conf stop all
+
+celery_status:
+	supervisorctl -c supervisor.conf status
+
+celery_update:
+	supervisorctl update

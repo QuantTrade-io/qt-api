@@ -31,7 +31,7 @@ class UserFactory(DjangoModelFactory):
 class UserUnsubscribedFactory(UserFactory):
     """
     UserFactory + Stripe Customer.
-    NOTE: User only when needed, slows down the test cases.
+    NOTE: Use only when needed, slows down the test cases.
     """
 
     status = get_user_model().STATUS_TYPE_VERIFIED

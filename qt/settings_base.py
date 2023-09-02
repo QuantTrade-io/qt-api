@@ -11,7 +11,8 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 import os
-from datetime import timedelta
+from datetime import datetime, timedelta
+from celery.schedules import crontab
 
 from django.utils.translation import gettext_lazy as _
 
@@ -32,7 +33,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Application definition
 
 INSTALLED_APPS = [
-    # Daphe
+    # Daphe, needs to be on top
     "daphne",
     # Built-in
     "django.contrib.admin",
@@ -45,6 +46,7 @@ INSTALLED_APPS = [
     "channels",
     "channels_auth_token_middlewares",
     "corsheaders",
+    "django_celery_results",
     "djstripe",
     "encrypted_model_fields",
     "modeltranslation",
@@ -92,6 +94,7 @@ TEMPLATES = [
     },
 ]
 
+
 # WSGI && ASGI
 
 WSGI_APPLICATION = "qt.wsgi.application"
@@ -102,12 +105,74 @@ ASGI_APPLICATION = 'qt.asgi.application'
 
 REDIS_URL = os.getenv('REDIS_URL', 'redis://localhost:6379')
 
+REDIS_KEY_CURRENT_STOCK_SUFFIXES = "current_stock_suffixes"
+
+REDIS_KEY_FINNHUB_WEBSOCKET_RECEIVER_LOCK = "finnhub_websocket_receiver_lock"
+REDIS_KEY_FINNHUB_WEBSOCKET_RECEIVER_TASK_ID = "finnhub_websocket_receiver_task_id"
+REDIS_KEY_FINNHUB_WEBSOCKET_RECEIVER_HEARTBEAT = "finnhub_websocket_receiver_heartbeat"
+
+REDIS_KEY_FINNHUB_WEBSOCKET_DISTRIBUTOR_TASK_ID = "finnhub_websocket_receiver_task_id"
+REDIS_KEY_FINNHUB_WEBSOCKET_DISTRIBUTOR_HEARTBEAT = "finnhub_websocket_receiver_heartbeat"
+
 CHANNEL_LAYERS = {
     'default': {
         'BACKEND': 'channels_redis.core.RedisChannelLayer',
         'CONFIG': {
             'hosts': [REDIS_URL],
         },
+    },
+}
+
+
+# Internationalization
+# https://docs.djangoproject.com/en/4.1/topics/i18n/
+
+MODELTRANSLATION_FALLBACK_LANGUAGES = ("en",)
+
+TIME_ZONE = "Europe/Amsterdam"
+
+USE_I18N = True
+
+USE_L10N = True
+
+USE_TZ = True
+
+LOCALE_PATHS = (os.path.join(BASE_DIR, "locale/"),)
+
+LANGUAGES = (
+    ("en", _("English")),
+    ("nl", _("Dutch")),
+)
+
+LANGUAGE_CODE = "en"
+
+
+# Celery settings
+
+CELERY_BROKER_URL = REDIS_URL
+CELERY_RESULT_BACKEND = 'django-db'
+CELERY_ACCEPT_CONTENT = ['json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = TIME_ZONE
+
+DEFAULT_QUEUE = "default_queue"
+CELERY_QUEUE_FINNHUB_RECEIVER = "celery_queue_finnhub"
+CELERY_QUEUE_FINNHUB_DISTRIBUTOR = "celery_queue_finnhub_distributor"
+
+CELERY_ROUTES = {
+    'core.tasks.default': {'queue': DEFAULT_QUEUE},
+    'core.tasks.finnhub_receiver': {'queue': CELERY_QUEUE_FINNHUB_RECEIVER},
+    'core.tasks.finnhub_distributor': {'queue': CELERY_QUEUE_FINNHUB_DISTRIBUTOR},
+}
+
+# Set the time for one-time execution (e.g., 1 minutes from now)
+run_at_time = datetime.now() + timedelta(seconds=20)
+
+CELERY_BEAT_SCHEDULE = {
+    "start-manage-stock-suffixes-subscriptions": {
+        "task": "manage_stock_suffix_subscriptions",
+        "schedule": crontab(minute='*/1'),
     },
 }
 
@@ -206,6 +271,11 @@ AWS_S3_PRIVATE_ASSETS = os.environ.get("AWS_S3_PRIVATE_ASSETS")
 AWS_S3_ACCESS_KEY_ID = os.environ.get("AWS_S3_ACCESS_KEY_ID")
 AWS_S3_SECRET_ACCESS_KEY = os.environ.get("AWS_S3_SECRET_ACCESS_KEY")
 
+
+# Finnhub
+FINNHUB_API_KEY = os.environ.get("FINNHUB_API_KEY")
+
+
 # Email Config
 EMAIL_BACKEND = "django_ses.SESBackend"
 AWS_SES_REGION_NAME = os.environ.get("AWS_SES_REGION_NAME")
@@ -217,28 +287,6 @@ NO_REPLY_EMAIL_ADDRESS = os.environ.get("SERVICE_EMAIL_ADDRESS")
 # Geolocation API
 GEOLOCATION_API_KEY = os.environ.get("GEOLOCATION_API_KEY")
 
-
-# Internationalization
-# https://docs.djangoproject.com/en/4.1/topics/i18n/
-
-MODELTRANSLATION_FALLBACK_LANGUAGES = ("en",)
-
-TIME_ZONE = "Europe/Amsterdam"
-
-USE_I18N = True
-
-USE_L10N = True
-
-USE_TZ = True
-
-LOCALE_PATHS = (os.path.join(BASE_DIR, "locale/"),)
-
-LANGUAGES = (
-    ("en", _("English")),
-    ("nl", _("Dutch")),
-)
-
-LANGUAGE_CODE = "en"
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.1/howto/static-files/
@@ -263,4 +311,4 @@ PASSWORD_MIN_LENGTH = 10
 PASSWORD_MAX_LENGTH = 100
 
 MAXIMUM_FILE_SIZE = 10240000  # 10MB
-SUPPORTED_MEDIA_MIMETYPES = ["image/gif", "image/jpeg", "image/png"]
+SUPPORTED_MEDIA_MIMETYPES = ["image/gif", "image/jpeg", "image/png"]settings

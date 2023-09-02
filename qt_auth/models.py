@@ -545,7 +545,7 @@ class User(AbstractUser):
         kwargs = check_can_connect_with_broker(broker_id, authentication_method_id, email, username, password)
 
         BrokerAccount = get_broker_account_model()
-        BrokerAccount.create_broker_account(user_id=self.pk, broker_id=broker_id, authentication_method_id=authentication_method_id, email=email, username=username, password=password, **kwargs)
+        return BrokerAccount.create_broker_account(user_id=self.pk, broker_id=broker_id, authentication_method_id=authentication_method_id, email=email, username=username, password=password, **kwargs)
 
     def update_broker_account_with_id(self, broker_account_id, authentication_method_id, email, username, password):
         broker_account = self.broker_accounts.select_related('broker', 'authentication_method').get(pk=broker_account_id)
@@ -575,3 +575,6 @@ class User(AbstractUser):
 
     def delete_broker_account_by_id(self, broker_account_id):
         return self.broker_accounts.get(pk=broker_account_id).delete()
+
+    def get_unique_ticker_suffixes(self):
+        return  self.broker_accounts.prefetch_related("holdings").values_list('holdings__ticker_suffix', flat=True).distinct()

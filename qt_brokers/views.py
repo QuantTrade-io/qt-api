@@ -9,6 +9,7 @@ from .exceptions import BrokerAccountCreationError
 
 from .serializers import BrokerSerializer, BrokerAccountSerializer, DeleteBrokerAccountSerializer, GetBrokerAccountSerializer, PatchBrokerAccountSerializer, PostBrokerAccountSerializer
 from .models import Broker
+from .tasks import broker_account_set_holdings
 
 from qt_utils.responses import ApiMessageResponse
 
@@ -49,7 +50,7 @@ class BrokerAccountItem(APIView):
         # The custom UniqueConstraints wouldn't be catched by the transaction.atomic block otherwise.
         with transaction.atomic():
             try:
-                user.create_broker_account(
+                broker_account = user.create_broker_account(
                     broker_id,
                     authentication_method_id,
                     email,
@@ -61,6 +62,12 @@ class BrokerAccountItem(APIView):
                     str(e),
                     status=status.HTTP_406_NOT_ACCEPTABLE,
                 )
+        
+        # Start celery task for getting & setting al the holdings
+        # related to this broker account.
+        broker_account_set_holdings.delay(
+            broker_account.id
+        )
 
         return ApiMessageResponse(
             _("Succesfully added Broker & checked connectivity"),
